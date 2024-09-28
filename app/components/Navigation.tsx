@@ -1,6 +1,6 @@
 // app/components/Navigation.tsx
 import { Section } from '~/utils/cms';
-import { Link } from '@remix-run/react';
+import { Link, NavLink } from '@remix-run/react';
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -57,9 +57,21 @@ export default function Navigation({ sections: sections }: { sections: Section[]
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pr-10"
             />
-            <Button className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-md">
-              検索
-            </Button>
+            {/* 検索ボタン */}
+            {searchQuery ? (
+                <NavLink to={`/search?q=${searchQuery}`}>
+                    <Button 
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
+                    onClick={() => setSearchQuery('')}
+                    >
+                        検索
+                    </Button>
+                </NavLink>
+            ) : (
+                <Button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md">
+                    検索
+                </Button>
+            )}
         </div>
       </div>
     </nav>

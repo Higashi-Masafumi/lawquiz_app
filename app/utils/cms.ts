@@ -42,6 +42,15 @@ export const fetchPostContent = async (slug: string) => {
     return data.contents[0] as Post;
 }
 
+export const searchPosts = async (query: string) => {
+    const data = await client.get({
+        endpoint: "article",
+        queries: { q: query },
+    });
+    console.log(data);
+    return data.contents as Post[];
+}
+
 export const fetchSectionBySlug = async (slug: string) => {
     const data = await client.get({
         endpoint: "section",
