@@ -12,7 +12,7 @@
   - [2. 環境変数の設定](#2-環境変数の設定)
   - [3. Dockerコンテナのビルドと起動](#3-dockerコンテナのビルドと起動)
 - [開発手順](#開発手順)
-- [環境変数の説明](#環境変数の説明)
+- [各ファイルの説明](#各ファイルの説明)
 - [トラブルシューティング](#トラブルシューティング)
 - [貢献方法](#貢献方法)
 - [ライセンス](#ライセンス)
@@ -25,7 +25,7 @@
 ## 前提条件
 
 - **Git**: バージョン管理システム
-- **Docker**: コンテナ化プラットフォーム
+- **Docker**: コンテナ化プラットフォームです。[Docker公式サイト](https://www.docker.com/ja-jp/)からデスクトップ版をダウンロードしてください。
 - **Docker Compose**: 複数コンテナの管理ツール
 
 ## セットアップ手順
@@ -34,7 +34,7 @@
 
 ### 1. リポジトリのクローン
 
-まず、リポジトリをローカルマシンにクローンします。
+プロジェクトフォルダを配置したいフォルダに移動して、まず、リポジトリをローカルマシンにクローンします。
 
 ```bash
 git clone https://github.com/Higashi-Masafumi/lawquiz_app.git
@@ -43,12 +43,24 @@ git clone https://github.com/Higashi-Masafumi/lawquiz_app.git
 ### 2. 環境変数の設定
 以下のコマンドで環境変数ファイルを作成してください。
 ```bash
-cp .env.example .env
+cp .env.sample .env
 ```
-環境変数を適切に設定してください。[このNotionページの内容をコピーしてください](https://www.notion.so/web-a1a0a0ca9e224cc5bd97dfdb0ba1d4e5?pvs=4#10f09777bb0480738b4de607f7458f6b)
+環境変数を適切に設定してください。[このNotionページ](https://www.notion.so/web-a1a0a0ca9e224cc5bd97dfdb0ba1d4e5?pvs=4#10f09777bb0480738b4de607f7458f6b)の内容をコピーしてください（アクセスには管理者権限が必要です）
 
 ### 3. Dockerコンテナのビルドと起動
 ```bash
 docker-compose up --build
 ```
+
+## 開発手順
+- dockerでのビルドが完了すると、次のポートでアプリケーションが立ち上がるので、ブラウザからアクセスしてください。
+- [http://localhost:5173/](http://localhost:5173/)
+
+
+## 各ファイルの説明
+- `app/routes/_index.tsx:`最初に開くページに対応するファイルです。
+- `app/routes/sections.$sectionName.tsx:`各セクションに対応するページです。
+- `app/routes/article.$slug.tsx:`各記事に対応するページです。
+- `app/routes/search.tsx:`各検索結果に対応するページです。
+- `app/utils/cms.ts:`microCMSのAPIを使ったユーティリティ関数を実装しているファイルです。
 
