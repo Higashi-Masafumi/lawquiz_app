@@ -5,9 +5,21 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { useRouteLoaderData, useRouteError } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
-
+import Navigation from "./components/Navigation"
+import { fetchAllSections, Section } from "./utils/cms";
 import styles from "./tailwind.css?url";
+
+export const loader: LoaderFunction = async ({ request }: LoaderFunctionArgs) => {
+  const sections = await fetchAllSections();
+  if (!sections || sections.length === 0) {
+    throw new Response("No Sections Found", { status: 404 });
+    return { error: true };
+  }
+  return { sections : sections };
+}
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -23,6 +35,11 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+
+  // root の loader で取得したデータを取得
+  const { sections } = useRouteLoaderData("root") as { sections: Section[] };
+  console.log('sections in layout', sections);
+  const error = useRouteError();
   return (
     <html lang="en">
       <head>
@@ -32,7 +49,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <Navigation sections={sections} />
+        <main>
+          {children}
+        </main>
         <ScrollRestoration />
         <Scripts />
       </body>

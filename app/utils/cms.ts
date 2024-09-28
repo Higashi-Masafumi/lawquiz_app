@@ -12,6 +12,8 @@ export interface Section {
     publishedAt: string;
     revisedAt: string;
     section: string;
+    slug: string;
+    description: string;
 }
 
 export interface Post {
@@ -47,6 +49,12 @@ export const fetchSectionBySlug = async (slug: string) => {
     });
     console.log(data);
     return data.contents[0] as Section;
+}
+
+export const fetchAllSections = async () => {
+    const data = await client.get({ endpoint: "section" });
+    console.log(data);
+    return data.contents as Section[];
 }
 
 export const fetchPostsBySection = async (section: Section) => {
