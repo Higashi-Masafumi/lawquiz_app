@@ -101,7 +101,7 @@ export const fetchPostsBySection = async (section: Section) => {
 export const registerGrade = async (post_content: Post, gradeData: GradingResult) => {
     // その記事に対して採点結果を登録
     const registeringData = {
-        'article': post_content,
+        'article': post_content.id,
         'commentary': gradeData.commentary,
         'scores': gradeData.grading.map((grading) => ({
             'fieldId': 'scoring_item',

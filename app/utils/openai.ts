@@ -18,6 +18,22 @@ const gradingDataSchema = z.object({
     commentary: z.string(),
 });
 
+// スキーマの動的生成
+const createScoringSchema = (scoring_criteria: ScoringCriterion[]) => {
+    const schemaObject = scoring_criteria.reduce((acc, criterion) => {
+      acc[criterion.item_title] = z.object({
+        item_title: z.literal(criterion.item_title),
+        score: z.number(),
+      });
+      return acc;
+    }, {} as Record<string, z.ZodTypeAny>);
+  
+    return z.object({
+        results: z.object(schemaObject),
+        commentary: z.string(),
+    });
+  };
+
 // 結果画面に表示するデータ
 export interface Grading {
     title: string;
@@ -38,6 +54,7 @@ export const gradeAnswer = async (answer: string, page_slug: string): Promise<st
     const scoring_criteria = page_content.scoring_criteria;
     const problem = page_content.problem;
     const fact = page_content.fact;
+    const scoringSchema = createScoringSchema(scoring_criteria);
     const prompt = `あなたは次の司法試験に関連する問題の採点官です。以下の採点基準基づいて与えられた回答を採点してください。
     問題: ${problem}
     要件事実: ${fact}
@@ -48,23 +65,15 @@ export const gradeAnswer = async (answer: string, page_slug: string): Promise<st
     {
         "results": [
             {
-                "item_title": "論理性",
-                "score": 20
+                "item_title": <採点基準名>,
+                "score": <点数>
             },
             {
-                "item_title": "独創性",
-                "score": 20
+                "item_title": <採点基準名>,
+                "score": <点数>
             },
-            {
-                "item_title": "構成力",
-                "score": 20
-            },
-            {
-                "item_title": "表現力",
-                "score": 20
-            }
         ],
-        "commentary": "この解答は全体的に良好ですが、表現力と構成力においてもう少し改善が必要です。特に論理性はしっかりしているので、その点をさらに強化すると良いでしょう。"
+        "commentary": <総評>
     }`;
 
     const completion = await openai.beta.chat.completions.parse({
@@ -73,7 +82,7 @@ export const gradeAnswer = async (answer: string, page_slug: string): Promise<st
             { role: "system", content: prompt },
             { role: "user", content: answer },
         ],
-        response_format: zodResponseFormat(gradingDataSchema, 'results'),
+        response_format: zodResponseFormat(scoringSchema, 'results'),
     });
 
     const gradingData = completion.choices[0].message.parsed;
@@ -81,17 +90,16 @@ export const gradeAnswer = async (answer: string, page_slug: string): Promise<st
         throw new Error('Failed to parse grading data');
     }
 
-    const grading: Grading[] = scoring_criteria.map((criterion) => {
-        const result = gradingData.results.find((result) => result.item_title === criterion.item_title);
-        if (!result) {
-            throw new Error(`Missing result for criterion: ${criterion.item_title}`);
-        }
+    console.log(gradingData);
+
+    const grading = scoring_criteria.map((criterion) => {
+        const score = gradingData.results[criterion.item_title].score;
         return {
             title: criterion.item_title,
-            score: result.score,
+            score: score,
             maxScore: criterion.score,
             criterion: criterion.scoring_criterion,
-            description: criterion.item_title,
+            description: criterion.scoring_criterion,
         };
     });
 

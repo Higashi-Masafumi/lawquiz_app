@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { useLoaderData, json } from '@remix-run/react'
+import { useLoaderData, json, Form, useActionData, useNavigate, useSubmit, redirect } from '@remix-run/react'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/components/ui/accordion'
 import { Button } from '~/components/ui/button'
 import { Textarea } from '~/components/ui/textarea'
 import { fetchPostContent } from '~/utils/cms'
 import { gradeAnswer } from '~/utils/openai'
-import { useNavigate } from '@remix-run/react'
-import type { LoaderFunction } from '@remix-run/node'
+import type { LoaderFunction, ActionFunction } from '@remix-run/node'
+import { Loader2 } from 'lucide-react'
 
 export const loader: LoaderFunction = async ({ params }) => {
     const slug = params.slug as string
@@ -17,17 +17,40 @@ export const loader: LoaderFunction = async ({ params }) => {
     return json({ pageContent: post });
 }
 
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
+  const answer = formData.get('answer') as string;
+  const slug = formData.get('slug') as string;
+
+  if (!answer || !slug) {
+    return json({ error: '回答が必要です' }, { status: 400 });
+  }
+
+  try {
+    const gradingResult = await gradeAnswer(answer, slug);
+    return redirect(`/result/${gradingResult}`);
+  } catch (error) {
+    console.error(error);
+    return json({ error: '採点処理に失敗しました' }, { status: 500 });
+  }
+};
+
 export default function Index() {
-  const { pageContent } = useLoaderData<typeof loader>()
-  const [userAnswer, setUserAnswer] = useState('')
-  const navigate = useNavigate()
+  const { pageContent } = useLoaderData<typeof loader>();
+  const actionData = useActionData();
+  const navigate = useNavigate();
+  const submit = useSubmit();
+  const [userAnswer, setUserAnswer] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
-    const result = await gradeAnswer(userAnswer, pageContent.slug)
-    console.log(result)
-    // 結果画面に遷移
-  }
+    setLoading(true);
+    event.preventDefault();
+    const formData = new FormData();
+    formData.append('answer', userAnswer);
+    formData.append('slug', pageContent.slug);
+    submit(formData, { 'method': 'post' });
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -69,20 +92,23 @@ export default function Index() {
                 <div className="mt-4 text-gray-700" dangerouslySetInnerHTML={{ __html: pageContent.fact }} />
               </div>
 
-              <form onSubmit={handleSubmit} className="bg-white p-6 rounded-md shadow-md">
+              <Form method="post" onSubmit={handleSubmit} className="bg-white p-6 rounded-md shadow-md">
                 <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">解答</h2>
                 <Textarea
+                  name="answer"
                   placeholder="解答を入力してください"
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
                   className="mt-4 p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={loading}
                 />
+                <input type="hidden" name="slug" value={pageContent.slug} />
                 <div className="text-right mt-4">
-                  <Button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-md">
-                    提出
+                  <Button type="submit" disabled={loading} className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md">
+                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : '解答する'}
                   </Button>
                 </div>
-              </form>
+              </Form>
 
               <Accordion type="multiple">
                   <AccordionItem value="navigate">
@@ -107,5 +133,5 @@ export default function Index() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
