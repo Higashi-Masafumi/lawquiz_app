@@ -5,6 +5,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/
 import { Button } from '~/components/ui/button'
 import { Textarea } from '~/components/ui/textarea'
 import { fetchPostContent } from '~/utils/cms'
+import { gradeAnswer } from '~/utils/openai'
+import { useNavigate } from '@remix-run/react'
 import type { LoaderFunction } from '@remix-run/node'
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -18,13 +20,13 @@ export const loader: LoaderFunction = async ({ params }) => {
 export default function Index() {
   const { pageContent } = useLoaderData<typeof loader>()
   const [userAnswer, setUserAnswer] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
-    const formData = new FormData()
-    formData.append('answer', userAnswer)
-    await fetch('/', { method: 'POST', body: formData })
-    setUserAnswer('')
+    const result = await gradeAnswer(userAnswer, pageContent.slug)
+    console.log(result)
+    // 結果画面に遷移
   }
 
   return (

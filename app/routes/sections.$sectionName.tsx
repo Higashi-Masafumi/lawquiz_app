@@ -48,7 +48,7 @@ export default function SectionPage() {
                   {post.problem.replace(/(<([^>]+)>)/gi, '').substring(0, 100) + '...'}
                 </p>
                 <div className="mt-6">
-                <NavLink to={`/article/${post.slug}`} prefetch='render'>
+                <NavLink to={`/article/${post.slug}`}>
                   <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md text-center">
                     記事を読む
                   </Button>
