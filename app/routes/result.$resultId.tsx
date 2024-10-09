@@ -13,13 +13,15 @@ import { Button } from '~/components/ui/button';
 import { Separator } from '~/components/ui/separator';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '~/components/ui/accordion';
 import { LoaderFunction, LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { NavLink, useLoaderData } from '@remix-run/react';
 import { fetchGrade } from '~/utils/cms';
 
 type LoaderData = {
   scores: { criteria: string; score: number }[];
   criteria: { criteria: string; maxScore: number; description: string }[];
+  answer: string;
   commentary: string;
+  article_slug: string;
 };
 
 export const loader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => {
@@ -34,28 +36,41 @@ export const loader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => 
     maxScore: criterion.score,
     description: criterion.scoring_criterion,
   }));
-  return { scores, criteria, commentary: result.commentary };
+  console.log({ scores, criteria });
+  return { scores, criteria, answer: result.answer, commentary: result.commentary, article_slug: result.article.slug };
 };
 
 export default function GradingResultPage() {
-  const { scores, criteria, commentary } = useLoaderData<LoaderData>();
+  const { scores, criteria, answer, commentary, article_slug } = useLoaderData<LoaderData>();
 
   // レーダーチャート用のデータを加工
-  const radarData = scores.map((item) => ({
-    subject: item.criteria,
-    score: item.score,
-    fullMark: criteria.find((criterion) => criterion.criteria === item.criteria)?.maxScore || 20,
-  }));
+  const radarData = scores.map((item) => {
+    const maxScore = criteria.find((criterion) => criterion.criteria === item.criteria)!.maxScore;
+    return {
+      subject: item.criteria,
+      score: (item.score / maxScore) * 100, // 各項目の得点を最大値の割合に変換
+      fullMark: 100, // 全ての項目を100点満点でスケーリング
+    };
+  });
 
+  const totalScore = scores.reduce((acc, item) => acc + item.score, 0);
+  const totalMaxScore = criteria.reduce((acc, item) => acc + item.maxScore, 0);
   return (
     <div className="container mx-auto px-6 py-6 grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* 左側: 採点結果と講評 */}
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>採点結果</CardTitle>
+            <CardTitle className="text-2xl">採点結果</CardTitle>
           </CardHeader>
           <CardContent>
+            {/* 総合得点の表示 */}
+            <div className="bg-gray-100 p-4 rounded-md shadow-md mb-6">
+              <h2 className="text-xl font-semibold text-gray-800">総合得点</h2>
+              <p className="text-lg text-gray-700 mt-2">
+                {totalScore} / {totalMaxScore} 点
+              </p>
+            </div>
             <ul className="space-y-4">
               {criteria.map((item) => (
                 <li
@@ -73,7 +88,9 @@ export default function GradingResultPage() {
             <div className="bg-blue-50 p-4 rounded-md shadow">
               <h2 className="text-lg font-semibold text-blue-700">講評</h2>
               <p className="text-gray-700 mt-2">{commentary}</p>
-              <Button className="mt-4">次の問題に進む</Button>
+              <NavLink to={`/article/${article_slug}`} className="block mt-4 text-blue-600">
+                <Button>元の記事を見る</Button>
+              </NavLink>
             </div>
           </CardContent>
         </Card>
@@ -90,7 +107,7 @@ export default function GradingResultPage() {
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
                 <PolarGrid />
                 <PolarAngleAxis dataKey="subject" />
-                <PolarRadiusAxis angle={30} domain={[0, 20]} />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
                 <Radar
                   name="得点"
                   dataKey="score"
@@ -100,6 +117,11 @@ export default function GradingResultPage() {
                 />
               </RadarChart>
             </ResponsiveContainer>
+          </div>
+          {/*回答の表示 */}
+          <div className="mt-4">
+            <h2 className="text-lg font-semibold text-gray-800">あなたの回答</h2>
+            <div className="mt-4 text-gray-700" dangerouslySetInnerHTML={{ __html: answer }} />
           </div>
         </CardContent>
       </Card>

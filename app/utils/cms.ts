@@ -48,6 +48,7 @@ export interface gradeAnswer {
     publishedAt: string;
     revisedAt: string;
     article: Post;
+    answer: string;
     commentary: string;
     scores: {
         fieldId: string;
@@ -98,11 +99,12 @@ export const fetchPostsBySection = async (section: Section) => {
     return data.contents as Post[];
 }
 
-export const registerGrade = async (post_content: Post, gradeData: GradingResult) => {
+export const registerGrade = async (post_content: Post, answer: string, gradeData: GradingResult) => {
     // その記事に対して採点結果を登録
     const registeringData = {
         'article': post_content.id,
         'commentary': gradeData.commentary,
+        'answer': answer,
         'scores': gradeData.grading.map((grading) => ({
             'fieldId': 'scoring_item',
             'title': grading.title,

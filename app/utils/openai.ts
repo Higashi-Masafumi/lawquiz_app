@@ -108,7 +108,7 @@ export const gradeAnswer = async (answer: string, page_slug: string): Promise<st
         commentary: gradingData.commentary,
     }
 
-    const gradeId = await registerGrade(page_content, gradedata);
+    const gradeId = await registerGrade(page_content, answer, gradedata);
 
     return gradeId.id;
 }

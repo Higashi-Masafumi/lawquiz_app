@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/components/ui/accordion'
 import { Button } from '~/components/ui/button'
 import { Textarea } from '~/components/ui/textarea'
+import { AutosizeTextarea } from '~/components/AutoresizeTextarea'
 import { fetchPostContent } from '~/utils/cms'
 import { gradeAnswer } from '~/utils/openai'
 import type { LoaderFunction, ActionFunction } from '@remix-run/node'
@@ -94,19 +95,26 @@ export default function Index() {
 
               <Form method="post" onSubmit={handleSubmit} className="bg-white p-6 rounded-md shadow-md">
                 <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">解答</h2>
-                <Textarea
+                <AutosizeTextarea
                   name="answer"
                   placeholder="解答を入力してください"
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
-                  className="mt-4 p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="min-h-[40px] mt-4 p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   disabled={loading}
                 />
                 <input type="hidden" name="slug" value={pageContent.slug} />
                 <div className="text-right mt-4">
-                  <Button type="submit" disabled={loading} className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md">
-                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : '解答する'}
-                  </Button>
+                  { loading ? (
+                    <Button className="bg-red-600 cursor-not-allowed" disabled>
+                      <Loader2 className="w-6 h-6 mr-2 animate-spin" />
+                      採点中
+                    </Button>
+                  ) : (
+                    <Button type="submit" className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
+                      採点する
+                    </Button>
+                  )}
                 </div>
               </Form>
 
