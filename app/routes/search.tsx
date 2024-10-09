@@ -1,7 +1,7 @@
 
 import { LoaderFunction, json, LoaderFunctionArgs } from "@remix-run/node";
 import { NavLink, useLoaderData } from "@remix-run/react";
-import { Post, searchPosts } from "~/utils/cms";
+import { Post, searchPosts } from "~/utils/cms.server";
 import { Link } from "@remix-run/react";
 import { Card } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";

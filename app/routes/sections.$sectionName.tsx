@@ -1,15 +1,13 @@
 import { useLoaderData, json, NavLink } from '@remix-run/react';
-import { fetchPostsBySection, fetchSectionBySlug, Post } from '~/utils/cms';
+import { fetchPostsBySection, fetchSectionBySlug, Post } from '~/utils/cms.server';
 import type { LoaderFunction } from '@remix-run/node';
 import { Card } from '~/components/ui/card';
 import { Button } from '~/components/ui/button';
 
 export const loader: LoaderFunction = async ({ params }) => {
   const sectionName = params.sectionName as string;
-  console.log(sectionName);
   const section = await fetchSectionBySlug(sectionName);
   if (!section) {
-    console.log('section not found');
     throw new Response('Not Found', { status: 404 });
   }
   const posts = await fetchPostsBySection(section);

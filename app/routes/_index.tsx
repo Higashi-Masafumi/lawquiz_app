@@ -1,5 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
-import { fetchAllSections, Section } from "~/utils/cms";
+import { fetchAllSections, Section } from "~/utils/cms.server";
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { json } from '@remix-run/node';
 import type { LoaderFunction } from '@remix-run/node';

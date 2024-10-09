@@ -1,5 +1,5 @@
 // app/components/Navigation.tsx
-import { Section } from '~/utils/cms';
+import { Section } from '~/utils/cms.server';
 import { Link, NavLink } from '@remix-run/react';
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';

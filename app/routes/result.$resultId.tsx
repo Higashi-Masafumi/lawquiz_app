@@ -14,7 +14,7 @@ import { Separator } from '~/components/ui/separator';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '~/components/ui/accordion';
 import { LoaderFunction, LoaderFunctionArgs } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
-import { fetchGrade } from '~/utils/cms';
+import { fetchGrade } from '~/utils/cms.server';
 
 type LoaderData = {
   scores: { criteria: string; score: number }[];
@@ -36,7 +36,6 @@ export const loader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => 
     maxScore: criterion.score,
     description: criterion.scoring_criterion,
   }));
-  console.log({ scores, criteria });
   return { scores, criteria, answer: result.answer, commentary: result.commentary, article_slug: result.article.slug };
 };
 

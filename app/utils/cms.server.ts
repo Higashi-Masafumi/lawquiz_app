@@ -1,9 +1,10 @@
 import { createClient } from "microcms-js-sdk";
-import { Grading, GradingResult } from "./openai";
-
+import { Grading, GradingResult } from "./openai.server";
+import dotenv from "dotenv";
+dotenv.config();
 export const client = createClient({
-    serviceDomain: process.env.MICROCMS_SERVICE_DOMAIN!,
-    apiKey: process.env.MICROCMS_API_KEY!,
+    serviceDomain: process.env.VITE_MICROCMS_SERVICE_DOMAIN!,
+    apiKey: process.env.VITE_MICROCMS_API_KEY!,
 });
 
 export interface Section {
@@ -62,7 +63,6 @@ export const fetchPostContent = async (slug: string) => {
         endpoint: "article",
         queries: { filters: `slug[equals]${slug}` },
     });
-    console.log(data);
     return data.contents[0] as Post;
 }
 
@@ -71,7 +71,6 @@ export const searchPosts = async (query: string) => {
         endpoint: "article",
         queries: { q: query },
     });
-    console.log(data);
     return data.contents as Post[];
 }
 
@@ -80,13 +79,11 @@ export const fetchSectionBySlug = async (slug: string) => {
         endpoint: "section",
         queries: { filters: `slug[equals]${slug}` },
     });
-    console.log(data);
     return data.contents[0] as Section;
 }
 
 export const fetchAllSections = async () => {
     const data = await client.get({ endpoint: "section" });
-    console.log(data);
     return data.contents as Section[];
 }
 
@@ -95,7 +92,6 @@ export const fetchPostsBySection = async (section: Section) => {
         endpoint: "article",
         queries: { filters: `section[equals]${section.id}` },
     });
-    console.log(data);
     return data.contents as Post[];
 }
 
@@ -111,13 +107,11 @@ export const registerGrade = async (post_content: Post, answer: string, gradeDat
             'score': grading.score,
         })),
     };
-    console.log(registeringData);
 
     const data = await client.create({
         endpoint: "answers",
         content: registeringData,
     });
-    console.log(data);
     return data;
 }
 
@@ -126,6 +120,5 @@ export const fetchGrade = async (id: string) => {
         endpoint: "answers",
         queries: { filters: `id[equals]${id}` },
     });
-    console.log(data);
     return data.contents[0] as gradeAnswer;
 }

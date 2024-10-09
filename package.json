@@ -21,6 +21,7 @@
     "@remix-run/serve": "^2.12.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "dotenv": "^16.4.5",
     "isbot": "^4.1.0",
     "lucide-react": "^0.441.0",
     "microcms-js-sdk": "^3.1.2",

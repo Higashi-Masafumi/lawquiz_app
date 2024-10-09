@@ -5,16 +5,14 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/
 import { Button } from '~/components/ui/button'
 import { Textarea } from '~/components/ui/textarea'
 import { AutosizeTextarea } from '~/components/AutoresizeTextarea'
-import { fetchPostContent } from '~/utils/cms'
-import { gradeAnswer } from '~/utils/openai'
+import { fetchPostContent } from '~/utils/cms.server'
+import { gradeAnswer } from '~/utils/openai.server'
 import type { LoaderFunction, ActionFunction } from '@remix-run/node'
 import { Loader2 } from 'lucide-react'
 
 export const loader: LoaderFunction = async ({ params }) => {
     const slug = params.slug as string
-    console.log(slug);
     const post = await fetchPostContent(slug);
-    console.log('post', post);
     return json({ pageContent: post });
 }
 

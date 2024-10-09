@@ -9,7 +9,7 @@ import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { useRouteLoaderData, useRouteError } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 import Navigation from "./components/Navigation"
-import { fetchAllSections, Section } from "./utils/cms";
+import { fetchAllSections, Section } from "./utils/cms.server";
 import styles from "./tailwind.css?url";
 
 export const loader: LoaderFunction = async ({ request }: LoaderFunctionArgs) => {
@@ -38,7 +38,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   // root の loader で取得したデータを取得
   const { sections } = useRouteLoaderData("root") as { sections: Section[] };
-  console.log('sections in layout', sections);
   const error = useRouteError();
   return (
     <html lang="en">
