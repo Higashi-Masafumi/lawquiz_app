@@ -11,6 +11,7 @@ import type { LinksFunction } from "@remix-run/node";
 import Navigation from "./components/Navigation"
 import { fetchAllSections, Section } from "./utils/cms.server";
 import styles from "./tailwind.css?url";
+import { Analytics } from "@vercel/analytics/react";
 
 export const loader: LoaderFunction = async ({ request }: LoaderFunctionArgs) => {
   const sections = await fetchAllSections();
@@ -60,5 +61,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <div>
+      <Outlet />
+      <Analytics/>
+    </div>
+  );
 }
