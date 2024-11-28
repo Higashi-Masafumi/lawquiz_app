@@ -30,7 +30,7 @@ export const action: ActionFunction = async ({ request }) => {
     return redirect(`/result/${gradingResult}`);
   } catch (error) {
     console.error(error);
-    return json({ error: '採点処理に失敗しました' }, { status: 500 });
+    throw new  Response('採点処理がタイムアウトしました', { status: 504 });
   }
 };
 
