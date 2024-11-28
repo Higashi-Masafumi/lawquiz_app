@@ -1,20 +1,26 @@
 // app/routes/grading-result.tsx
-import { useState } from 'react';
+import { useState } from "react";
+
 import {
   Radar,
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
-  ResponsiveContainer
-} from 'recharts';
-import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card';
-import { Button } from '~/components/ui/button';
-import { Separator } from '~/components/ui/separator';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '~/components/ui/accordion';
-import { LoaderFunction, LoaderFunctionArgs } from '@remix-run/node';
-import { NavLink, useLoaderData } from '@remix-run/react';
-import { fetchGrade } from '~/utils/cms.server';
+  ResponsiveContainer,
+} from "recharts";
+import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Separator } from "~/components/ui/separator";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "~/components/ui/accordion";
+import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { NavLink, useLoaderData } from "@remix-run/react";
+import { fetchGrade } from "~/utils/cms.server";
 
 type LoaderData = {
   scores: { criteria: string; score: number }[];
@@ -24,7 +30,9 @@ type LoaderData = {
   article_slug: string;
 };
 
-export const loader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => {
+export const loader: LoaderFunction = async ({
+  params,
+}: LoaderFunctionArgs) => {
   const resultId = params.resultId as string;
   const result = await fetchGrade(resultId);
   const scores = result.scores.map((score) => ({
@@ -36,15 +44,24 @@ export const loader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => 
     maxScore: criterion.score,
     description: criterion.scoring_criterion,
   }));
-  return { scores, criteria, answer: result.answer, commentary: result.commentary, article_slug: result.article.slug };
+  return {
+    scores,
+    criteria,
+    answer: result.answer,
+    commentary: result.commentary,
+    article_slug: result.article.slug,
+  };
 };
 
 export default function GradingResultPage() {
-  const { scores, criteria, answer, commentary, article_slug } = useLoaderData<LoaderData>();
+  const { scores, criteria, answer, commentary, article_slug } =
+    useLoaderData<LoaderData>();
 
   // レーダーチャート用のデータを加工
   const radarData = scores.map((item) => {
-    const maxScore = criteria.find((criterion) => criterion.criteria === item.criteria)!.maxScore;
+    const maxScore = criteria.find(
+      (criterion) => criterion.criteria === item.criteria
+    )!.maxScore;
     return {
       subject: item.criteria,
       score: (item.score / maxScore) * 100, // 各項目の得点を最大値の割合に変換
@@ -76,9 +93,13 @@ export default function GradingResultPage() {
                   key={item.criteria}
                   className="flex justify-between items-center bg-white rounded-lg shadow p-4"
                 >
-                  <span className="text-lg font-semibold text-gray-800">{item.criteria}</span>
+                  <span className="text-lg font-semibold text-gray-800">
+                    {item.criteria}
+                  </span>
                   <span className="text-sm text-gray-600">
-                    {scores.find((score) => score.criteria === item.criteria)?.score || 0} / {item.maxScore} 点
+                    {scores.find((score) => score.criteria === item.criteria)
+                      ?.score || 0}{" "}
+                    / {item.maxScore} 点
                   </span>
                 </li>
               ))}
@@ -87,7 +108,10 @@ export default function GradingResultPage() {
             <div className="bg-blue-50 p-4 rounded-md shadow">
               <h2 className="text-lg font-semibold text-blue-700">講評</h2>
               <p className="text-gray-700 mt-2">{commentary}</p>
-              <NavLink to={`/article/${article_slug}`} className="block mt-4 text-blue-600">
+              <NavLink
+                to={`/article/${article_slug}`}
+                className="block mt-4 text-blue-600"
+              >
                 <Button>元の記事を見る</Button>
               </NavLink>
             </div>
@@ -106,7 +130,11 @@ export default function GradingResultPage() {
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
                 <PolarGrid />
                 <PolarAngleAxis dataKey="subject" />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
+                <PolarRadiusAxis
+                  angle={30}
+                  domain={[0, 100]}
+                  tickFormatter={(value) => `${value}%`}
+                />
                 <Radar
                   name="得点"
                   dataKey="score"
@@ -119,8 +147,13 @@ export default function GradingResultPage() {
           </div>
           {/*回答の表示 */}
           <div className="mt-4">
-            <h2 className="text-lg font-semibold text-gray-800">あなたの回答</h2>
-            <div className="mt-4 text-gray-700" dangerouslySetInnerHTML={{ __html: answer }} />
+            <h2 className="text-lg font-semibold text-gray-800">
+              あなたの回答
+            </h2>
+            <div
+              className="mt-4 text-gray-700"
+              dangerouslySetInnerHTML={{ __html: answer }}
+            />
           </div>
         </CardContent>
       </Card>
