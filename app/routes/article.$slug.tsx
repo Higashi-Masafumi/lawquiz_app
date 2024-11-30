@@ -23,12 +23,14 @@ import {
 } from "~/components/ui/tooltip";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
+import { Switch } from "~/components/ui/switch";
 import { AutosizeTextarea } from "~/components/AutoresizeTextarea";
 import { fetchPostContent } from "~/utils/cms.server";
 import { gradeAnswer } from "~/utils/openai.server";
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
-import { Loader2, BadgeHelp } from "lucide-react";
+import { Loader2, Keyboard } from "lucide-react";
 import { ContentBox } from "~/components/contetbox";
+import { useTypingSpeed } from "~/utils/typingSpeed";
 
 export const loader: LoaderFunction = async ({ params }) => {
   const slug = params.slug as string;
@@ -61,18 +63,9 @@ export default function Index() {
   const submit = useSubmit();
   const [userAnswer, setUserAnswer] = useState("");
   const [loading, setLoading] = useState(false);
-  const [startTime, setStartTime] = useState(0);
-  const [typingSpeed, setTypingSpeed] = useState(0);
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setUserAnswer(event.target.value);
-    if (!startTime) {
-      setStartTime(Date.now());
-    }
-    const elapsedTime = Date.now() - startTime;
-    const speed = Math.floor((event.target.value.length / elapsedTime) * 60000);
-    setTypingSpeed(speed);
-  };
+  const { typingSpeed, isTyping, updateTypingSpeed, resetTypingStats } =
+    useTypingSpeed();
+  const [isSubQuestionMode, setIsSubQuestionMode] = useState<boolean>(false);
 
   const handleSubmit = async (event: React.FormEvent) => {
     setLoading(true);
@@ -135,19 +128,26 @@ export default function Index() {
                 <ContentBox content={pageContent.fact} />
               </div>
 
-              <Form
-                method="post"
-                onSubmit={handleSubmit}
-                className="bg-white p-6 rounded-md shadow-md border-2"
-              >
+              <div className="bg-white p-6 rounded-md shadow-md border-2">
                 <div className="flex justify-between items-center">
                   <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">
                     解答
                   </h2>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">
+                        小問採点モード
+                      </span>
+                      <Switch
+                        checked={isSubQuestionMode}
+                        onCheckedChange={setIsSubQuestionMode}
+                      />
+                    </div>
+                  </div>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger className="flex items-center gap-2">
-                        <BadgeHelp className="w-6 h-6 text-slate-500 cursor-pointer" />
+                        <Keyboard className="w-6 h-6" />
                         <span className="text-sm text-gray-600">
                           {typingSpeed} 文字/分
                         </span>
@@ -158,28 +158,33 @@ export default function Index() {
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <AutosizeTextarea
-                  name="answer"
-                  placeholder="解答を入力してください"
-                  value={userAnswer}
-                  onChange={(e) => {
-                    handleInputChange(e);
-                  }}
-                  className="min-h-[40px] mt-4 p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={loading}
-                />
-                <input type="hidden" name="slug" value={pageContent.slug} />
-                <div className="text-right mt-4">
-                  {loading ? (
-                    <Button className="bg-red-600 cursor-not-allowed" disabled>
-                      <Loader2 className="w-6 h-6 mr-2 animate-spin" />
-                      採点中
-                    </Button>
-                  ) : (
-                    <Button type="submit">採点する</Button>
-                  )}
-                </div>
-              </Form>
+                <Form method="post" onSubmit={handleSubmit}>
+                  <AutosizeTextarea
+                    name="answer"
+                    placeholder="解答を入力してください"
+                    value={userAnswer}
+                    onChange={(event) => {
+                      setUserAnswer(event.target.value);
+                      updateTypingSpeed(event.target.value);
+                    }}
+                    className="min-h-[40px] mt-4 p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    disabled={loading}
+                  />
+                  <div className="text-right mt-4">
+                    {loading ? (
+                      <Button
+                        className="bg-red-600 cursor-not-allowed"
+                        disabled
+                      >
+                        <Loader2 className="w-6 h-6 mr-2 animate-spin" />
+                        採点中
+                      </Button>
+                    ) : (
+                      <Button type="submit">採点する</Button>
+                    )}
+                  </div>
+                </Form>
+              </div>
 
               <Accordion type="multiple">
                 <AccordionItem value="navigate">
