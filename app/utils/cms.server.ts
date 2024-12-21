@@ -3,8 +3,8 @@ import { Grading, GradingResult } from "./openai.server";
 import dotenv from "dotenv";
 dotenv.config();
 export const client = createClient({
-    serviceDomain: process.env.VITE_MICROCMS_SERVICE_DOMAIN!,
-    apiKey: process.env.VITE_MICROCMS_API_KEY!,
+    serviceDomain: process.env.MICROCMS_SERVICE_DOMAIN!,
+    apiKey: process.env.MICROCMS_API_KEY!,
 });
 
 export interface Section {
