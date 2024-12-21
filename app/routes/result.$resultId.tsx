@@ -1,6 +1,4 @@
 // app/routes/grading-result.tsx
-import { useState } from "react";
-
 import {
   Radar,
   RadarChart,

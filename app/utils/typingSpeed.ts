@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from "react";
 
 export type TypingStats = {
   speed: number;
@@ -32,7 +32,7 @@ export function useTypingSpeed() {
   const updateTypingSpeed = useCallback((text: string) => {
     const now = Date.now();
 
-    setStats(prev => {
+    setStats((prev) => {
       if (!prev.startTime) {
         return {
           ...prev,
@@ -62,21 +62,22 @@ export function useTypingSpeed() {
 
     if (stats.isTyping) {
       pauseTimer = window.setTimeout(() => {
-        setStats(prev => ({
+        setStats((prev) => ({
           ...prev,
           isTyping: false,
           lastPauseTime: Date.now(),
         }));
       }, TYPING_PAUSE_THRESHOLD);
     } else if (stats.lastPauseTime) {
-      setStats(prev => ({
+      setStats((prev) => ({
         ...prev,
-        totalPauseTime: prev.totalPauseTime + (Date.now() - (prev.lastPauseTime || 0)),
+        totalPauseTime:
+          prev.totalPauseTime + (Date.now() - (prev.lastPauseTime || 0)),
       }));
     }
 
     return () => clearTimeout(pauseTimer);
-  }, [stats.isTyping]);
+  }, [stats.isTyping, stats.lastPauseTime]);
 
   return {
     typingSpeed: stats.speed,

@@ -1,26 +1,39 @@
 import {
+  isRouteErrorResponse,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteError,
+  useRouteLoaderData,
+  Link,
 } from "@remix-run/react";
-import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
-import { useRouteLoaderData, useRouteError } from "@remix-run/react";
+import { LoaderFunction } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
-import Navigation from "./components/Navigation"
+import Navigation from "./components/Navigation";
 import { fetchAllSections, Section } from "./utils/cms.server";
 import styles from "./tailwind.css?url";
 import { Analytics } from "@vercel/analytics/react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./components/ui/card";
+import { Button } from "./components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
-export const loader: LoaderFunction = async ({ request }: LoaderFunctionArgs) => {
+export const loader: LoaderFunction = async () => {
   const sections = await fetchAllSections();
   if (!sections || sections.length === 0) {
     throw new Response("No Sections Found", { status: 404 });
     return { error: true };
   }
-  return { sections : sections };
-}
+  return { sections: sections };
+};
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -36,10 +49,9 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
-
   // root の loader で取得したデータを取得
-  const { sections } = useRouteLoaderData("root") as { sections: Section[] };
-  const error = useRouteError();
+  const data = useRouteLoaderData("root") as { sections: Section[] };
+  const sections = data?.sections ?? [];
   return (
     <html lang="en">
       <head>
@@ -50,9 +62,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <Navigation sections={sections} />
-        <main>
-          {children}
-        </main>
+        <main>{children}</main>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -64,7 +74,112 @@ export default function App() {
   return (
     <div>
       <Outlet />
-      <Analytics/>
+      <Analytics />
+    </div>
+  );
+}
+
+export const ErrorBoundary = () => {
+  const error = useRouteError();
+  console.log("error boundary", error);
+  if (isRouteErrorResponse(error)) {
+    switch (error.status) {
+      case 404:
+        return <Error404 />;
+      case 500:
+        return <Error500 />;
+    }
+  } else if (error instanceof Error) {
+    return <Error500 />;
+  } else {
+    return (
+      <div className="flex items-center justify-center w-full h-screen px-4">
+        <Card className="max-w-sm mx-auto">
+          <CardHeader>
+            <CardTitle className="text-2xl">不明なエラー</CardTitle>
+            <CardDescription>
+              予期せぬエラーが発生しました。画面を更新してください。
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col w-full space-y-3">
+              <Button
+                className="w-full"
+                onClick={() => window.location.reload()}
+              >
+                画面を更新
+              </Button>
+              <NavTopButton variant="outline" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+};
+
+function NavTopButton({
+  variant = "default",
+}: {
+  variant?: "default" | "outline";
+}) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  return (
+    <Link to="/" onClick={() => setIsLoading(true)}>
+      <Button className="w-full" disabled={isLoading} variant={variant}>
+        {isLoading ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            読み込み中...
+          </>
+        ) : (
+          "トップページに戻る"
+        )}
+      </Button>
+    </Link>
+  );
+}
+
+function Error404() {
+  return (
+    <div className="flex items-center justify-center w-full h-screen px-4">
+      <Card className="max-w-sm mx-auto">
+        <CardHeader>
+          <CardTitle className="text-2xl">ページが見つかりません</CardTitle>
+          <CardDescription>
+            お探しのページが見つかりませんでした。
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="w-full">
+            <NavTopButton />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function Error500() {
+  return (
+    <div className="flex items-center justify-center w-full h-screen px-4">
+      <Card className="max-w-sm mx-auto">
+        <CardHeader>
+          <CardTitle className="text-2xl">エラー</CardTitle>
+          <CardDescription>
+            予期せぬエラーが発生しました。画面を更新してください。
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col w-full space-y-3">
+            <Button className="w-full" onClick={() => window.location.reload()}>
+              画面を更新
+            </Button>
+            <NavTopButton variant="outline" />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
