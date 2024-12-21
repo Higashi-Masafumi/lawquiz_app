@@ -6,7 +6,7 @@ import { fetchPostContent } from "./cms.server";
 import { registerGrade } from "./cms.server";
 import dotenv from "dotenv";
 dotenv.config();
-const openai = new OpenAI({ apiKey: process.env.VITE_OPENAI_API_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // 一つの採点項目の採点結果のスキーマ
 const scoringCriterionSchema = z.object({
