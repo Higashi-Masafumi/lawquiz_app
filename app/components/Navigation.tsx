@@ -21,7 +21,7 @@ export default function Navigation({
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="h-[64px] border-b bg-background fixed top-0 w-full z-50">
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         {/* 左側：セクションメニューとロゴ */}
         <div className="flex items-center">

@@ -1,10 +1,7 @@
-import { useLoaderData, json, NavLink } from "@remix-run/react";
-import {
-  fetchPostsBySection,
-  fetchSectionBySlug,
-  Post,
-} from "~/utils/cms.server";
-import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { getSectionBySlugWithPosts } from "~/infra/microCMS/section.get";
+import type { Section, Post } from "~/domain/entities/section";
 import {
   Card,
   CardContent,
@@ -14,23 +11,26 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
+import { NavLink, useLoaderData } from "@remix-run/react";
+import { formatDate } from "~/utils/date";
 
-export const loader: LoaderFunction = async ({ params }) => {
-  const sectionName = params.sectionName as string;
-  const section = await fetchSectionBySlug(sectionName);
-  if (!section) {
-    throw new Response("Not Found", { status: 404 });
+export const loader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => {
+  console.log("SectionPage loader called with:", params.sectionName);
+  try {
+    const section = await getSectionBySlugWithPosts(params.sectionName!);
+    console.log("Section data:", section);
+    if (!section) {
+      throw new Response("Not Found", { status: 404 });
+    }
+    return json({ section });
+  } catch (error) {
+    console.error("Error in section loader:", error);
+    throw new Response("Error loading section", { status: 500 });
   }
-  const posts = await fetchPostsBySection(section);
-  // 記事が存在しない場合のエラーハンドリング
-  if (!posts || posts.length === 0) {
-    throw new Response("Not Found", { status: 404 });
-  }
-  return json({ posts, section });
 };
 
 export default function SectionPage() {
-  const { posts, section } = useLoaderData<typeof loader>();
+  const { section } = useLoaderData<{ section: Section }>();
 
   return (
     <div className="min-h-screen">
@@ -39,7 +39,7 @@ export default function SectionPage() {
           {section.section} の記事一覧
         </h1>
         <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start">
-          {posts.map((post: Post) => (
+          {section.posts.map((post: Post) => (
             <Card
               key={post.id}
               className="overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300"
@@ -47,15 +47,16 @@ export default function SectionPage() {
               <CardHeader>
                 <CardTitle>{post.title}</CardTitle>
                 <CardDescription>
-                  更新日: {new Date(post.updatedAt).toLocaleDateString()}
+                  更新日: {formatDate(post.updatedAt)}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="max-h-40 overflow-hidden">
                   <h6 className="text-sm font-bold text-gray-500">問題文</h6>
-                  <p className="text-sm text-gray-600">
-                  <div dangerouslySetInnerHTML={{ __html: post.problem }} />
-                  </p>
+                  <div
+                    className="text-sm text-gray-600"
+                    dangerouslySetInnerHTML={{ __html: post.problem }}
+                  />
                 </div>
               </CardContent>
               <CardFooter>

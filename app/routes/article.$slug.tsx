@@ -8,7 +8,7 @@ import {
   useSubmit,
   redirect,
 } from "@remix-run/react";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Card, CardContent } from "~/components/ui/card";
 import {
   Accordion,
   AccordionContent,
@@ -22,20 +22,22 @@ import {
   TooltipProvider,
 } from "~/components/ui/tooltip";
 import { Button } from "~/components/ui/button";
-import { Textarea } from "~/components/ui/textarea";
 import { Switch } from "~/components/ui/switch";
 import { AutosizeTextarea } from "~/components/AutoresizeTextarea";
-import { fetchPostContent } from "~/utils/cms.server";
 import { gradeAnswer } from "~/utils/openai.server";
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { Loader2, Keyboard } from "lucide-react";
 import { ContentBox } from "~/components/contetbox";
 import { useTypingSpeed } from "~/utils/typingSpeed";
+import { getPostContent } from "~/infra/microCMS/post.get";
+import type { Post } from "~/domain/entities/section";
 
 export const loader: LoaderFunction = async ({ params }) => {
-  const slug = params.slug as string;
-  const post = await fetchPostContent(slug);
-  return json({ pageContent: post });
+  const post = await getPostContent(params.slug!);
+  if (!post) {
+    throw new Response("Not Found", { status: 404 });
+  }
+  return json({ post });
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -56,8 +58,8 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-export default function Index() {
-  const { pageContent } = useLoaderData<typeof loader>();
+export default function ArticlePage() {
+  const { post } = useLoaderData<{ post: Post }>();
   const actionData = useActionData();
   const navigate = useNavigate();
   const submit = useSubmit();
@@ -72,7 +74,7 @@ export default function Index() {
     event.preventDefault();
     const formData = new FormData();
     formData.append("answer", userAnswer);
-    formData.append("slug", pageContent.slug);
+    formData.append("slug", post.slug);
     submit(formData, { method: "post" });
   };
 
@@ -87,7 +89,7 @@ export default function Index() {
                 法律問題集
               </div>
               <h1 className="text-3xl font-bold text-slate-900 leading-tight">
-                {pageContent.title}
+                {post.title}
               </h1>
             </div>
           </div>
@@ -99,7 +101,7 @@ export default function Index() {
                 <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">
                   問題
                 </h2>
-                <ContentBox content={pageContent.problem} />
+                <ContentBox content={post.problem} />
               </div>
 
               <Accordion type="multiple">
@@ -108,7 +110,7 @@ export default function Index() {
                     使う知識
                   </AccordionTrigger>
                   <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
-                    <ContentBox content={pageContent.knowledge} size="sm" />
+                    <ContentBox content={post.knowledge} size="sm" />
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="column">
@@ -116,7 +118,7 @@ export default function Index() {
                     細かい知識
                   </AccordionTrigger>
                   <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
-                    <ContentBox content={pageContent.column} size="sm" />
+                    <ContentBox content={post.column} size="sm" />
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -125,7 +127,7 @@ export default function Index() {
                 <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">
                   要件事実
                 </h2>
-                <ContentBox content={pageContent.fact} />
+                <ContentBox content={post.fact} />
               </div>
 
               <div className="bg-white p-6 rounded-md shadow-md border-2">
@@ -192,7 +194,7 @@ export default function Index() {
                     解答方針
                   </AccordionTrigger>
                   <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
-                    <ContentBox content={pageContent.navigate} size="sm" />
+                    <ContentBox content={post.navigate} size="sm" />
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="comment">
@@ -200,7 +202,7 @@ export default function Index() {
                     アドバイス
                   </AccordionTrigger>
                   <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
-                    <ContentBox content={pageContent.comment} size="sm" />
+                    <ContentBox content={post.comment} size="sm" />
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

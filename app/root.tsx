@@ -12,7 +12,8 @@ import {
 import { LoaderFunction } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
 import Navigation from "./components/Navigation";
-import { fetchAllSections, Section } from "./utils/cms.server";
+import { getSectionsWithPosts } from "./infra/microCMS/section.get";
+import { Section } from "./domain/entities/section";
 import styles from "./tailwind.css?url";
 import { Analytics } from "@vercel/analytics/react";
 import {
@@ -25,9 +26,11 @@ import {
 import { Button } from "./components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import { SidebarProvider } from "./components/ui/sidebar";
+import { AppSidebar } from "./components/app-sidebar";
 
 export const loader: LoaderFunction = async () => {
-  const sections = await fetchAllSections();
+  const sections = await getSectionsWithPosts();
   if (!sections || sections.length === 0) {
     throw new Response("No Sections Found", { status: 404 });
     return { error: true };
@@ -49,9 +52,6 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  // root の loader で取得したデータを取得
-  const data = useRouteLoaderData("root") as { sections: Section[] };
-  const sections = data?.sections ?? [];
   return (
     <html lang="en">
       <head>
@@ -61,7 +61,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <Navigation sections={sections} />
         <main>{children}</main>
         <ScrollRestoration />
         <Scripts />
@@ -71,9 +70,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const data = useRouteLoaderData("root") as { sections: Section[] };
+  const sections = data?.sections ?? [];
   return (
-    <div>
-      <Outlet />
+    <div className="min-h-screen flex flex-col">
+      <Navigation sections={sections} />
+      <div className="flex flex-1 pt-[64px]">
+        <SidebarProvider>
+          <AppSidebar sections={sections} />
+          <main className="flex-1 p-4">
+            <Outlet />
+          </main>
+        </SidebarProvider>
+      </div>
       <Analytics />
     </div>
   );
@@ -107,7 +116,7 @@ export const ErrorBoundary = () => {
                 className="w-full"
                 onClick={() => window.location.reload()}
               >
-                画面を更新
+                画面を���新
               </Button>
               <NavTopButton variant="outline" />
             </div>
