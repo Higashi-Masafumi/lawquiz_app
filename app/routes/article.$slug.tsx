@@ -8,7 +8,7 @@ import {
   useSubmit,
   redirect,
 } from "@remix-run/react";
-import { Card, CardContent } from "~/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import {
   Accordion,
   AccordionContent,
@@ -22,8 +22,8 @@ import {
   TooltipProvider,
 } from "~/components/ui/tooltip";
 import { Button } from "~/components/ui/button";
-import { Switch } from "~/components/ui/switch";
-import { AutosizeTextarea } from "~/components/AutoresizeTextarea";
+import { Separator } from "~/components/ui/separator";
+import { Textarea } from "~/components/ui/textarea";
 import { gradeAnswer } from "~/utils/openai.server";
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { Loader2, Keyboard } from "lucide-react";
@@ -83,133 +83,147 @@ export default function ArticlePage() {
     <div className="min-h-screen">
       <div className="container mx-auto p-4">
         {/* ヘッダーセクション */}
-        <div className="mb-6 rounded-lg shadow-lg">
-          <div className="bg-white rounded-lg shadow-sm p-8">
-            <div className="flex flex-col gap-2">
-              <div className="text-sm font-medium text-slate-500">
-                法律問題集
-              </div>
-              <h1 className="text-3xl font-bold text-slate-900 leading-tight">
-                {post.title}
-              </h1>
-            </div>
-          </div>
-        </div>
+        <Card className="shadow-lg rounded-lg overflow-hidden my-8">
+          <CardHeader>
+            <CardTitle>分野: {post.section.section}</CardTitle>
+          </CardHeader>
+          <Separator />
+          <CardContent className="p-6">
+            <h1 className="text-3xl font-bold text-slate-900 leading-tight">
+              {post.title}
+            </h1>
+          </CardContent>
+        </Card>
         <Card className="shadow-lg rounded-lg overflow-hidden">
           <CardContent className="p-6">
             <div className="space-y-6">
-              <div className="bg-white p-6 rounded-md shadow-md border-2">
-                <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">
-                  問題
-                </h2>
-                <ContentBox content={post.problem} />
-              </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>問題</CardTitle>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  <ContentBox content={post.problem} />
+                </CardContent>
+              </Card>
 
-              <Accordion type="multiple">
-                <AccordionItem value="knowledge">
-                  <AccordionTrigger className="text-lg font-medium bg-gray-200 hover:bg-gray-300 p-3 rounded-md">
-                    使う知識
-                  </AccordionTrigger>
-                  <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
-                    <ContentBox content={post.knowledge} size="sm" />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="column">
-                  <AccordionTrigger className="text-lg font-medium bg-gray-200 hover:bg-gray-300 p-3 rounded-md mt-2">
-                    細かい知識
-                  </AccordionTrigger>
-                  <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
-                    <ContentBox content={post.column} size="sm" />
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+              <Card>
+                <CardHeader>
+                  <CardTitle>使う知識</CardTitle>
+                </CardHeader>
+                <Separator />
+                <CardContent className="my-4">
+                  <Accordion type="multiple">
+                    <AccordionItem value="knowledge">
+                      <AccordionTrigger className="text-lg font-medium bg-gray-200 hover:bg-gray-300 p-3 rounded-md">
+                        基本知識
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
+                        <ContentBox content={post.knowledge} size="sm" />
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="column">
+                      <AccordionTrigger className="text-lg font-medium bg-gray-200 hover:bg-gray-300 p-3 rounded-md mt-2">
+                        細かい知識
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
+                        <ContentBox content={post.column} size="sm" />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </CardContent>
+              </Card>
 
-              <div className="bg-white p-6 rounded-md shadow-md border-2">
-                <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">
-                  要件事実
-                </h2>
-                <ContentBox content={post.fact} />
-              </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>要件事実</CardTitle>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  <ContentBox content={post.fact} />
+                </CardContent>
+              </Card>
               {post.questions.map((question) => (
                 <QuestionCard key={question.theme} question={question} />
               ))}
 
-              <div className="bg-white p-6 rounded-md shadow-md border-2">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">
-                    解答
-                  </h2>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">
-                        小問採点モード
-                      </span>
-                      <Switch
-                        checked={isSubQuestionMode}
-                        onCheckedChange={setIsSubQuestionMode}
-                      />
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between gap-2">
+                    <CardTitle>解答入力</CardTitle>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger className="flex items-center gap-2">
+                          <Keyboard className="w-6 h-6" />
+                          <span className="text-sm text-gray-600">
+                            {typingSpeed} 文字/分
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          入力を開始してからのタイピングスピードです
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  <Form method="post" onSubmit={handleSubmit}>
+                    <Textarea
+                      name="answer"
+                      placeholder="解答を入力してください"
+                      value={userAnswer}
+                      onChange={(event) => {
+                        setUserAnswer(event.target.value);
+                        updateTypingSpeed(event.target.value);
+                      }}
+                      className="min-h-[150px] mt-4 p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      disabled={loading}
+                    />
+                    <div className="text-right mt-4">
+                      {loading ? (
+                        <Button
+                          className="bg-red-600 cursor-not-allowed"
+                          disabled
+                        >
+                          <Loader2 className="w-6 h-6 mr-2 animate-spin" />
+                          採点中
+                        </Button>
+                      ) : (
+                        <Button type="submit">採点する</Button>
+                      )}
                     </div>
-                  </div>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger className="flex items-center gap-2">
-                        <Keyboard className="w-6 h-6" />
-                        <span className="text-sm text-gray-600">
-                          {typingSpeed} 文字/分
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        入力を開始してからのタイピングスピードです
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <Form method="post" onSubmit={handleSubmit}>
-                  <AutosizeTextarea
-                    name="answer"
-                    placeholder="解答を入力してください"
-                    value={userAnswer}
-                    onChange={(event) => {
-                      setUserAnswer(event.target.value);
-                      updateTypingSpeed(event.target.value);
-                    }}
-                    className="min-h-[40px] mt-4 p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    disabled={loading}
-                  />
-                  <div className="text-right mt-4">
-                    {loading ? (
-                      <Button
-                        className="bg-red-600 cursor-not-allowed"
-                        disabled
-                      >
-                        <Loader2 className="w-6 h-6 mr-2 animate-spin" />
-                        採点中
-                      </Button>
-                    ) : (
-                      <Button type="submit">採点する</Button>
-                    )}
-                  </div>
-                </Form>
-              </div>
+                  </Form>
+                </CardContent>
+              </Card>
 
-              <Accordion type="multiple">
-                <AccordionItem value="navigate">
-                  <AccordionTrigger className="text-lg font-medium bg-gray-200 hover:bg-gray-300 p-3 rounded-md">
-                    解答方針
-                  </AccordionTrigger>
-                  <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
-                    <ContentBox content={post.navigate} size="sm" />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="comment">
-                  <AccordionTrigger className="text-lg font-medium bg-gray-200 hover:bg-gray-300 p-3 rounded-md mt-2">
-                    アドバイス
-                  </AccordionTrigger>
-                  <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
-                    <ContentBox content={post.comment} size="sm" />
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+              {/* 解答方針 */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>解答方針</CardTitle>
+                </CardHeader>
+                <Separator />
+                <CardContent className="my-4">
+                  <Accordion type="multiple">
+                    <AccordionItem value="navigate">
+                      <AccordionTrigger className="text-lg font-medium bg-gray-200 hover:bg-gray-300 p-3 rounded-md">
+                        解答方針
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
+                        <ContentBox content={post.navigate} size="sm" />
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="comment">
+                      <AccordionTrigger className="text-lg font-medium bg-gray-200 hover:bg-gray-300 p-3 rounded-md mt-2">
+                        アドバイス
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
+                        <ContentBox content={post.comment} size="sm" />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </CardContent>
+              </Card>
             </div>
           </CardContent>
         </Card>
