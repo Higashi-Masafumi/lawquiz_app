@@ -31,6 +31,7 @@ import { ContentBox } from "~/components/contetbox";
 import { useTypingSpeed } from "~/utils/typingSpeed";
 import { getPostContent } from "~/infra/microCMS/post.get";
 import type { Post } from "~/domain/entities/section";
+import { QuestionCard } from "~/components/QuestionCard";
 
 export const loader: LoaderFunction = async ({ params }) => {
   const post = await getPostContent(params.slug!);
@@ -79,10 +80,10 @@ export default function ArticlePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen">
       <div className="container mx-auto p-4">
         {/* ヘッダーセクション */}
-        <div className="mb-6">
+        <div className="mb-6 rounded-lg shadow-lg">
           <div className="bg-white rounded-lg shadow-sm p-8">
             <div className="flex flex-col gap-2">
               <div className="text-sm font-medium text-slate-500">
@@ -129,6 +130,9 @@ export default function ArticlePage() {
                 </h2>
                 <ContentBox content={post.fact} />
               </div>
+              {post.questions.map((question) => (
+                <QuestionCard key={question.theme} question={question} />
+              ))}
 
               <div className="bg-white p-6 rounded-md shadow-md border-2">
                 <div className="flex justify-between items-center">

@@ -36,6 +36,7 @@ export class Post {
     public readonly knowledge: string,
     public readonly column: string,
     public readonly fact: string,
+    public readonly questions: Question[],
     public readonly navigate: string,
     public readonly comment: string,
     public readonly scoring_criteria: ScoringCriterion[],
@@ -55,6 +56,7 @@ export class Post {
       response.knowledge,
       response.column,
       response.fact,
+      response.question?.map(Question.fromResponse) ?? [],
       response.navigate,
       response.comment,
       response.scoring_criteria?.map(ScoringCriterion.fromResponse) ?? [],
@@ -81,3 +83,17 @@ export class ScoringCriterion {
     );
   }
 }
+
+export class Question {
+  constructor(
+    public readonly theme: string,
+    public readonly question: string,
+    public readonly answer: string,
+    public readonly comment: string,
+  ) {}
+
+  static fromResponse(response: any): Question {
+    return new Question(response.theme, response.question, response.answer, response.comment);
+  }
+}
+
