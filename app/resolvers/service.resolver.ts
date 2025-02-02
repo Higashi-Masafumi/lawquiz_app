@@ -31,7 +31,13 @@ const openAIScoringRepository = new ScoringRepository(openAIClient);
 
 // 依存関係の解決
 export const serviceResolver = {
-  scoringService: new ScoringService(openAIScoringRepository, microCMSGradingRepository),
+  scoringService: new ScoringService(
+    openAIScoringRepository,
+    microCMSGradingRepository
+  ),
   postService: new PostService(microCMSPostRepository),
-  sectionService: new SectionService(microCMSSectionRepository),
+  sectionService: new SectionService(
+    microCMSSectionRepository,
+    microCMSPostRepository
+  ),
 };

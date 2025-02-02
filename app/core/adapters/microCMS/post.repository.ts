@@ -50,6 +50,48 @@ export class PostRepository implements IPostRepository {
     };
   }
 
+  async getBySectionId(id: string): Promise<Post[]> {
+    const response = await this.client.get({
+      endpoint: "article",
+      queries: { filters: `section[equals]${id}` },
+    });
+    console.log("getBySectionId", response.contents);
+
+    return response.contents.map((post: Post) => {
+      return {
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        section: post.section,
+        problem: post.problem,
+        knowledge: post.knowledge,
+        column: post.column,
+        fact: post.fact,
+        questions: post.questions?.map((question: Question) => {
+          return {
+            theme: question.theme,
+            question: question.question,
+            answer: question.answer,
+            comment: question.comment,
+          };
+        }) ?? [],
+        navigate: post.navigate,
+        comment: post.comment,
+        scoring_criteria: post.scoring_criteria?.map((scoring_criterion: ScoringCriterion) => {
+          return {
+            item_title: scoring_criterion.item_title,
+            score: scoring_criterion.score,
+            scoring_criterion: scoring_criterion.scoring_criterion,
+          };
+        }) ?? [],
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+        publishedAt: post.publishedAt,
+        revisedAt: post.revisedAt,
+      };
+    });
+  }
+
   async search(query: string): Promise<Post[]> {
     const response = await this.client.get({
       endpoint: "article",

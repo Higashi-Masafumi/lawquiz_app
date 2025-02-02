@@ -1,9 +1,6 @@
 import { Section } from "~/core/domain/entities/section";
 import { createClient } from "microcms-js-sdk";
 import { ISectionRepository } from "~/core/domain/repositories/section.repository";
-import { Post } from "~/core/domain/entities/post";
-import { Question } from "~/core/domain/entities/question";
-import { ScoringCriterion } from "~/core/domain/entities/scoring_criterion";
 
 export class SectionRepository implements ISectionRepository {
   constructor(private readonly client: ReturnType<typeof createClient>) {}
@@ -23,39 +20,7 @@ export class SectionRepository implements ISectionRepository {
         createdAt: section.createdAt,
         publishedAt: section.publishedAt,
         revisedAt: section.revisedAt,
-        posts: section.posts?.map((post: Post) => {
-          return {
-            id: post.id,
-            title: post.title,
-            slug: post.slug,
-            section: post.section,
-            problem: post.problem,
-            knowledge: post.knowledge,
-            column: post.column,
-            fact: post.fact,
-            questions: post.questions.map((question: Question) => {
-              return {
-                theme: question.theme,
-                question: question.question,
-                answer: question.answer,
-                comment: question.comment,
-              };
-            }),
-            navigate: post.navigate,
-            comment: post.comment,
-            scoring_criteria: post.scoring_criteria.map((scoring_criterion: ScoringCriterion) => {
-              return {
-                item_title: scoring_criterion.item_title,
-                score: scoring_criterion.score,
-                scoring_criterion: scoring_criterion.scoring_criterion,
-              };
-            }),
-            createdAt: post.createdAt,
-            updatedAt: post.updatedAt,
-            publishedAt: post.publishedAt,
-            revisedAt: post.revisedAt,
-          };
-        }) ?? [],
+        posts:[],
       };
     });
   }
@@ -75,39 +40,7 @@ export class SectionRepository implements ISectionRepository {
         createdAt: response.contents[0].createdAt,
         publishedAt: response.contents[0].publishedAt,
         revisedAt: response.contents[0].revisedAt,
-        posts: response.contents[0].posts?.map((post: Post) => {
-          return {
-            id: post.id,
-            title: post.title,
-            slug: post.slug,
-            section: post.section,
-            problem: post.problem,
-            knowledge: post.knowledge,
-            column: post.column,
-            fact: post.fact,
-            questions: post.questions.map((question: Question) => {
-              return {
-                theme: question.theme,
-                question: question.question,
-                answer: question.answer,
-                comment: question.comment,
-              };
-            }),
-            navigate: post.navigate,
-            comment: post.comment,
-            scoring_criteria: post.scoring_criteria.map((scoring_criterion: ScoringCriterion) => {
-              return {
-                item_title: scoring_criterion.item_title,
-                score: scoring_criterion.score,
-                scoring_criterion: scoring_criterion.scoring_criterion,
-              };
-            }),
-            createdAt: post.createdAt,
-            updatedAt: post.updatedAt,
-            publishedAt: post.publishedAt,
-          revisedAt: post.revisedAt,
-        };
-      }) ?? [],
-    };
+        posts: [],
+      };
   }
 }
