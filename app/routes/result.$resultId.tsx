@@ -18,7 +18,7 @@ import {
 } from "~/components/ui/accordion";
 import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { NavLink, useLoaderData } from "@remix-run/react";
-import { fetchGrade } from "~/utils/cms.server";
+import { serviceResolver } from "~/resolvers/service.resolver";
 
 type LoaderData = {
   scores: { criteria: string; score: number }[];
@@ -32,7 +32,7 @@ export const loader: LoaderFunction = async ({
   params,
 }: LoaderFunctionArgs) => {
   const resultId = params.resultId as string;
-  const result = await fetchGrade(resultId);
+  const result = await serviceResolver.scoringService.getGradingAnswer(resultId);
   const scores = result.scores.map((score) => ({
     criteria: score.title,
     score: score.score,

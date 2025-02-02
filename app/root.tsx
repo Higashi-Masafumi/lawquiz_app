@@ -12,7 +12,6 @@ import {
 import { LoaderFunction } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
 import Navigation from "./components/Navigation";
-import { getSectionsWithPosts } from "./infra/microCMS/section.get";
 import { Section } from "./core/domain/entities/section";
 import styles from "./tailwind.css?url";
 import { Analytics } from "@vercel/analytics/react";
@@ -28,9 +27,10 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { AppSidebar } from "./components/app-sidebar";
+import { serviceResolver } from "~/resolvers/service.resolver";
 
 export const loader: LoaderFunction = async () => {
-  const sections = await getSectionsWithPosts();
+  const sections = await serviceResolver.sectionService.listAll();
   if (!sections || sections.length === 0) {
     throw new Response("No Sections Found", { status: 404 });
     return { error: true };

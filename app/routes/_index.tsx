@@ -1,7 +1,6 @@
 import { json } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import { useLoaderData, NavLink } from "@remix-run/react";
-import { getSectionsWithPosts } from "~/infra/microCMS/section.get";
 import type { Section } from "~/core/domain/entities/section";
 import {
   Card,
@@ -13,9 +12,10 @@ import {
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { formatDate } from "~/utils/date";
+import { serviceResolver } from "~/resolvers/service.resolver";
 
 export const loader: LoaderFunction = async () => {
-  const sections = await getSectionsWithPosts();
+  const sections = await serviceResolver.sectionService.listAll();
   if (!sections || sections.length === 0) {
     throw new Response("No Sections Found", { status: 404 });
   }

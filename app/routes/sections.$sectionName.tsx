@@ -1,6 +1,5 @@
 import { json } from "@remix-run/node";
 import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
-import { getSectionBySlugWithPosts } from "~/infra/microCMS/section.get";
 import { Section } from "~/core/domain/entities/section";
 import { Post } from "~/core/domain/entities/post";
 import {
@@ -14,13 +13,14 @@ import {
 import { Button } from "~/components/ui/button";
 import { NavLink, useLoaderData } from "@remix-run/react";
 import { formatDate } from "~/utils/date";
+import { serviceResolver } from "~/resolvers/service.resolver";
+
 
 export const loader: LoaderFunction = async ({
   params,
 }: LoaderFunctionArgs) => {
-  console.log("SectionPage loader called with:", params.sectionName);
   try {
-    const section = await getSectionBySlugWithPosts(params.sectionName!);
+    const section = await serviceResolver.sectionService.getBySlug(params.sectionName!);
     console.log("Section data:", section);
     if (!section) {
       throw new Response("Not Found", { status: 404 });

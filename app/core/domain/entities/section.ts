@@ -12,19 +12,4 @@ export class Section {
     public readonly revisedAt: string,
     public readonly posts: Post[] = []
   ) {}
-
-  static fromResponse(response: any): Section {
-    return new Section(
-      response.id,
-      response.section,
-      response.slug,
-      response.description,
-      response.updatedAt,
-      response.createdAt,
-      response.publishedAt,
-      response.revisedAt,
-      response.posts?.map(Post.fromResponse) ?? []
-    );
-  }
 }
-

@@ -1,10 +1,10 @@
 import { LoaderFunction, json, LoaderFunctionArgs } from "@remix-run/node";
 import { NavLink, useLoaderData } from "@remix-run/react";
-import { Post, searchPosts } from "~/utils/cms.server";
-import { Link } from "@remix-run/react";
+import { Post } from "~/core/domain/entities/post";
 import { Card } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Search } from "lucide-react";
+import { serviceResolver } from "~/resolvers/service.resolver";
 
 type LoaderData = {
   posts: Post[];
@@ -15,7 +15,7 @@ export const loader: LoaderFunction = async ({
   request,
 }: LoaderFunctionArgs) => {
   const query = new URL(request.url).searchParams.get("q");
-  const posts = await searchPosts(query || "");
+  const posts = await serviceResolver.postService.search(query || "");
   return json({ posts, query });
 };
 

@@ -22,17 +22,16 @@ import {
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { Textarea } from "~/components/ui/textarea";
-import { gradeAnswer } from "~/utils/openai.server";
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { Loader2, Keyboard } from "lucide-react";
 import { ContentBox } from "~/components/contetbox";
 import { useTypingSpeed } from "~/utils/typingSpeed";
-import { getPostContent } from "~/infra/microCMS/post.get";
+import { serviceResolver } from "~/resolvers/service.resolver";
 import { Post } from "~/core/domain/entities/post";
 import { QuestionCard } from "~/components/QuestionCard";
 
 export const loader: LoaderFunction = async ({ params }) => {
-  const post = await getPostContent(params.slug!);
+  const post = await serviceResolver.postService.getBySlug(params.slug!);
   if (!post) {
     throw new Response("Not Found", { status: 404 });
   }
@@ -42,14 +41,14 @@ export const loader: LoaderFunction = async ({ params }) => {
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const answer = formData.get("answer") as string;
-  const slug = formData.get("slug") as string;
+  const post = JSON.parse(formData.get("post") as string) as Post;
 
-  if (!answer || !slug) {
+  if (!answer || !post) {
     return json({ error: "回答が必要です" }, { status: 400 });
   }
 
   try {
-    const gradingResult = await gradeAnswer(answer, slug);
+    const gradingResult = await serviceResolver.scoringService.scoreAnswer(answer, post);
     return redirect(`/result/${gradingResult}`);
   } catch (error) {
     console.error(error);
@@ -69,7 +68,7 @@ export default function ArticlePage() {
     event.preventDefault();
     const formData = new FormData();
     formData.append("answer", userAnswer);
-    formData.append("slug", post.slug);
+    formData.append("post", JSON.stringify(post));
     submit(formData, { method: "post" });
   };
 

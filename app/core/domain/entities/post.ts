@@ -21,25 +21,4 @@ export class Post {
       public readonly publishedAt: string,
       public readonly revisedAt: string
     ) {}
-  
-    static fromResponse(response: any): Post {
-      return new Post(
-        response.id,
-        response.title,
-        response.slug,
-        response.section,
-        response.problem,
-        response.knowledge,
-        response.column,
-        response.fact,
-        response.question?.map(Question.fromResponse) ?? [],
-        response.navigate,
-        response.comment,
-        response.scoring_criteria?.map(ScoringCriterion.fromResponse) ?? [],
-        response.createdAt,
-        response.updatedAt,
-        response.publishedAt,
-        response.revisedAt
-      );
-    }
   }
