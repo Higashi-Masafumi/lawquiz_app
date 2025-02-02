@@ -19,6 +19,7 @@ import { z } from "zod";
 import { IScoringRepository } from "~/core/domain/repositories/scoring.repository";
 import { Post } from "~/core/domain/entities/post";
 import { GradingResult } from "~/core/domain/entities/grading";
+import { ScoringCriterion } from "~/core/domain/entities/scoring_criterion";
 
 const ScoringOutputSchema = z.object({
   results: z.array(
@@ -58,6 +59,19 @@ export class LangChainScoringRepository implements IScoringRepository {
     const docs = await loader.load();
 
     this.vectorStore = await HNSWLib.fromDocuments(docs, this.embeddings);
+  }
+
+  private createScoringSchema(criteria: ScoringCriterion[]): z.ZodSchema {
+    const itemTitles = criteria.map((c) => c.item_title);
+    return z.object({
+      results: z.array(
+        z.object({
+          item_title: z.enum([itemTitles[0], ...itemTitles.slice(1)]),
+          score: z.number(),
+        })
+      ),
+      commentary: z.string(),
+    });
   }
 
   /**
