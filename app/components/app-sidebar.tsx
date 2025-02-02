@@ -9,7 +9,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
 } from "./ui/sidebar";
-import { Section } from "~/domain/entities/section";
+import { Section } from "~/core/domain/entities/section";
 import {
   Collapsible,
   CollapsibleContent,

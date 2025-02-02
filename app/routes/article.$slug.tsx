@@ -3,8 +3,6 @@ import {
   useLoaderData,
   json,
   Form,
-  useActionData,
-  useNavigate,
   useSubmit,
   redirect,
 } from "@remix-run/react";
@@ -30,7 +28,7 @@ import { Loader2, Keyboard } from "lucide-react";
 import { ContentBox } from "~/components/contetbox";
 import { useTypingSpeed } from "~/utils/typingSpeed";
 import { getPostContent } from "~/infra/microCMS/post.get";
-import type { Post } from "~/domain/entities/section";
+import { Post } from "~/core/domain/entities/post";
 import { QuestionCard } from "~/components/QuestionCard";
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -61,14 +59,10 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function ArticlePage() {
   const { post } = useLoaderData<{ post: Post }>();
-  const actionData = useActionData();
-  const navigate = useNavigate();
-  const submit = useSubmit();
   const [userAnswer, setUserAnswer] = useState("");
   const [loading, setLoading] = useState(false);
-  const { typingSpeed, isTyping, updateTypingSpeed, resetTypingStats } =
-    useTypingSpeed();
-  const [isSubQuestionMode, setIsSubQuestionMode] = useState<boolean>(false);
+  const { typingSpeed, updateTypingSpeed } = useTypingSpeed();
+  const submit = useSubmit();
 
   const handleSubmit = async (event: React.FormEvent) => {
     setLoading(true);

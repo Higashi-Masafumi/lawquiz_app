@@ -1,11 +1,6 @@
 import { useState } from "react";
-import { Question } from "~/domain/entities/section";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "~/components/ui/card";
+import { Question } from "~/core/domain/entities/section";
+import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import {
   Accordion,
   AccordionItem,

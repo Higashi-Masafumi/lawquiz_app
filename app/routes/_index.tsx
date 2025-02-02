@@ -2,7 +2,7 @@ import { json } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import { useLoaderData, NavLink } from "@remix-run/react";
 import { getSectionsWithPosts } from "~/infra/microCMS/section.get";
-import type { Section } from "~/domain/entities/section";
+import type { Section } from "~/core/domain/entities/section";
 import {
   Card,
   CardContent,

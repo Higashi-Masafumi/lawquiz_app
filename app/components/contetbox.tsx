@@ -1,6 +1,5 @@
 // components/ProblemText.tsx
 import { cn } from "~/lib/utils";
-import { type HTMLProps } from "react";
 
 interface ContentBoxProps {
   content: string;

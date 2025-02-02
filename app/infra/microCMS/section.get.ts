@@ -1,4 +1,5 @@
-import { Section, Post } from "~/domain/entities/section";
+import { Section } from "~/core/domain/entities/section";
+import { Post } from "~/core/domain/entities/post";
 import { createClient } from "microcms-js-sdk";
 import { MicroCMSResponse, MicroCMSContentBase } from "./types";
 

@@ -13,7 +13,7 @@ import { LoaderFunction } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
 import Navigation from "./components/Navigation";
 import { getSectionsWithPosts } from "./infra/microCMS/section.get";
-import { Section } from "./domain/entities/section";
+import { Section } from "./core/domain/entities/section";
 import styles from "./tailwind.css?url";
 import { Analytics } from "@vercel/analytics/react";
 import {

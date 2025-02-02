@@ -1,7 +1,8 @@
 import { json } from "@remix-run/node";
 import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { getSectionBySlugWithPosts } from "~/infra/microCMS/section.get";
-import type { Section, Post } from "~/domain/entities/section";
+import { Section } from "~/core/domain/entities/section";
+import { Post } from "~/core/domain/entities/post";
 import {
   Card,
   CardContent,
@@ -14,7 +15,9 @@ import { Button } from "~/components/ui/button";
 import { NavLink, useLoaderData } from "@remix-run/react";
 import { formatDate } from "~/utils/date";
 
-export const loader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => {
+export const loader: LoaderFunction = async ({
+  params,
+}: LoaderFunctionArgs) => {
   console.log("SectionPage loader called with:", params.sectionName);
   try {
     const section = await getSectionBySlugWithPosts(params.sectionName!);
