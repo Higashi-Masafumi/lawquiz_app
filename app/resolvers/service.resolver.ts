@@ -9,6 +9,10 @@ import { SectionService } from "~/core/usecase/section.service";
 import dotenv from "dotenv";
 dotenv.config();
 import OpenAI from "openai";
+import { OpenAIEmbeddings, ChatOpenAI } from "@langchain/openai";
+import { LangChainScoringRepository } from "~/core/adapters/langchain/scoring.repository";
+
+export const USE_LANGCHAIN = true;
 
 // microCMSのクライアント
 const microCMSClient = createClient({
@@ -21,6 +25,14 @@ const openAIClient = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
+const embeddings = new OpenAIEmbeddings({
+  openAIApiKey: process.env.OPENAI_API_KEY!,
+});
+
+const chatModel = new ChatOpenAI({
+  openAIApiKey: process.env.OPENAI_API_KEY!,
+});
+
 // microCMSのリポジトリ
 const microCMSGradingRepository = new GradingRepository(microCMSClient);
 const microCMSPostRepository = new PostRepository(microCMSClient);
@@ -28,11 +40,15 @@ const microCMSSectionRepository = new SectionRepository(microCMSClient);
 
 // OpenAIのリポジトリ
 const openAIScoringRepository = new ScoringRepository(openAIClient);
+const langChainScoringRepository = new LangChainScoringRepository(
+  embeddings,
+  chatModel
+);
 
 // 依存関係の解決
 export const serviceResolver = {
   scoringService: new ScoringService(
-    openAIScoringRepository,
+    USE_LANGCHAIN ? langChainScoringRepository : openAIScoringRepository,
     microCMSGradingRepository
   ),
   postService: new PostService(microCMSPostRepository),
