@@ -55,7 +55,6 @@ export class PostRepository implements IPostRepository {
       endpoint: "article",
       queries: { filters: `section[equals]${id}` },
     });
-    console.log("getBySectionId", response.contents);
 
     return response.contents.map((post: Post) => {
       return {

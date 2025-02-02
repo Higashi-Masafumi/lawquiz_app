@@ -116,7 +116,7 @@ export const ErrorBoundary = () => {
                 className="w-full"
                 onClick={() => window.location.reload()}
               >
-                画面を���新
+                画面を更新
               </Button>
               <NavTopButton variant="outline" />
             </div>

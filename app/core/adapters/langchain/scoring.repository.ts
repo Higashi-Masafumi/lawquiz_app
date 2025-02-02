@@ -87,6 +87,7 @@ export class LangChainScoringRepository implements IScoringRepository {
 採点基準: {criteria}
 
 次に示す回答を採点し、それぞれの採点基準に基づいた点数評価と総評を指定されたフォーマットで返してください。
+総評では引用などを用いて、回答の内容をより具体的に評価してください。
 フォーマット:
 {{
   "results": [

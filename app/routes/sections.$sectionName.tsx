@@ -21,7 +21,6 @@ export const loader: LoaderFunction = async ({
 }: LoaderFunctionArgs) => {
   try {
     const section = await serviceResolver.sectionService.getBySlug(params.sectionName!);
-    console.log("Section data:", section);
     if (!section) {
       throw new Response("Not Found", { status: 404 });
     }
