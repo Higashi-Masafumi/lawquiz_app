@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Question } from "~/core/domain/entities/section";
+import { Question } from "~/core/domain/entities/question";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import {
   Accordion,
