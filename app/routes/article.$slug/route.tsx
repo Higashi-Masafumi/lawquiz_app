@@ -115,17 +115,20 @@ export default function ArticlePage() {
                         <ContentBox content={post.knowledge} size="sm" />
                       </AccordionContent>
                     </AccordionItem>
-                    <AccordionItem value="column">
-                      <AccordionTrigger className="text-lg font-medium bg-gray-200 hover:bg-gray-300 p-3 rounded-md mt-2">
-                        細かい知識
-                      </AccordionTrigger>
-                      <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
-                        <ContentBox content={post.column} size="sm" />
-                      </AccordionContent>
-                    </AccordionItem>
                   </Accordion>
                 </CardContent>
               </Card>
+
+              <Accordion type="multiple">
+                <AccordionItem value="example">
+                  <AccordionTrigger className="text-lg font-medium bg-gray-200 hover:bg-gray-300 p-3 rounded-md">
+                    模範解答
+                  </AccordionTrigger>
+                  <AccordionContent className="bg-white p-4 rounded-md shadow-inner">
+                    <ContentBox content={post.column} size="sm" />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
 
               <Card>
                 <CardHeader>
