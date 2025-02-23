@@ -20,7 +20,7 @@ export class PostRepository implements IPostRepository {
       section: response.contents[0].section,
       problem: response.contents[0].problem,
       knowledge: response.contents[0].knowledge,
-      column: response.contents[0].column,
+      answer: response.contents[0].answer,
       fact: response.contents[0].fact,
       questions:
         response.contents[0].question?.map((question: Question) => {
@@ -29,6 +29,7 @@ export class PostRepository implements IPostRepository {
             question: question.question,
             answer: question.answer,
             comment: question.comment,
+            scoring_criteria: question.scoring_criteria,
           };
         }) ?? [],
       navigate: response.contents[0].navigate,
@@ -64,7 +65,7 @@ export class PostRepository implements IPostRepository {
         section: post.section,
         problem: post.problem,
         knowledge: post.knowledge,
-        column: post.column,
+        answer: post.answer,
         fact: post.fact,
         questions: post.questions?.map((question: Question) => {
           return {
@@ -72,6 +73,7 @@ export class PostRepository implements IPostRepository {
             question: question.question,
             answer: question.answer,
             comment: question.comment,
+            scoring_criteria: question.scoring_criteria,  
           };
         }) ?? [],
         navigate: post.navigate,
@@ -105,7 +107,7 @@ export class PostRepository implements IPostRepository {
         section: post.section,
         problem: post.problem,
         knowledge: post.knowledge,
-        column: post.column,
+        answer: post.answer,
         fact: post.fact,
         questions: post.questions?.map((question: Question) => {
           return {
@@ -113,6 +115,7 @@ export class PostRepository implements IPostRepository {
             question: question.question,
             answer: question.answer,
             comment: question.comment,
+            scoring_criteria: question.scoring_criteria,
           };
         }) ?? [],
         navigate: post.navigate,

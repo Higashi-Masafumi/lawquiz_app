@@ -1,5 +1,3 @@
-import { json } from "@remix-run/node";
-import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { Section } from "~/core/domain/entities/section";
 import { Post } from "~/core/domain/entities/post";
 import {
@@ -14,22 +12,20 @@ import { Button } from "~/components/ui/button";
 import { NavLink, useLoaderData } from "@remix-run/react";
 import { formatDate } from "~/utils/date";
 import { serviceResolver } from "~/resolvers/service.resolver";
+import { LoaderFunctionArgs } from "@remix-run/node";
 
-
-export const loader: LoaderFunction = async ({
+export async function loader({
   params,
-}: LoaderFunctionArgs) => {
-  try {
-    const section = await serviceResolver.sectionService.getBySlug(params.sectionName!);
-    if (!section) {
-      throw new Response("Not Found", { status: 404 });
-    }
-    return json({ section });
-  } catch (error) {
-    console.error("Error in section loader:", error);
-    throw new Response("Error loading section", { status: 500 });
+}: LoaderFunctionArgs) {
+  if (!params.slug) {
+    throw new Response("Not Found", { status: 404 });
   }
-};
+  const section = await serviceResolver.sectionService.getBySlug(params.slug);
+  if (!section) {
+    throw new Response("Not Found", { status: 404 });
+  }
+  return { section };
+}
 
 export default function SectionPage() {
   const { section } = useLoaderData<{ section: Section }>();
@@ -62,7 +58,7 @@ export default function SectionPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <NavLink to={`/article/${post.slug}`}>
+                <NavLink to={`/articles/${post.slug}`}>
                   <Button>記事を見る</Button>
                 </NavLink>
               </CardFooter>

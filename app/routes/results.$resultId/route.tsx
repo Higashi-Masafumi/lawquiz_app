@@ -16,23 +16,15 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "~/components/ui/accordion";
-import { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs } from "@remix-run/node";
 import { NavLink, useLoaderData } from "@remix-run/react";
 import { serviceResolver } from "~/resolvers/service.resolver";
 
-type LoaderData = {
-  scores: { criteria: string; score: number }[];
-  criteria: { criteria: string; maxScore: number; description: string }[];
-  answer: string;
-  commentary: string;
-  article_slug: string;
-};
-
-export const loader: LoaderFunction = async ({
-  params,
-}: LoaderFunctionArgs) => {
+export async function loader({ params }: LoaderFunctionArgs) {
   const resultId = params.resultId as string;
-  const result = await serviceResolver.scoringService.getGradingAnswer(resultId);
+  const result = await serviceResolver.scoringService.getGradingAnswer(
+    resultId
+  );
   const scores = result.scores.map((score) => ({
     criteria: score.title,
     score: score.score,
@@ -49,11 +41,11 @@ export const loader: LoaderFunction = async ({
     commentary: result.commentary,
     article_slug: result.article.slug,
   };
-};
+}
 
 export default function GradingResultPage() {
   const { scores, criteria, answer, commentary, article_slug } =
-    useLoaderData<LoaderData>();
+    useLoaderData<typeof loader>();
 
   // レーダーチャート用のデータを加工
   const radarData = scores.map((item) => {
@@ -107,7 +99,7 @@ export default function GradingResultPage() {
               <h2 className="text-lg font-semibold text-blue-700">講評</h2>
               <p className="text-gray-700 mt-2">{commentary}</p>
               <NavLink
-                to={`/article/${article_slug}`}
+                to={`/articles/${article_slug}`}
                 className="block mt-4 text-blue-600"
               >
                 <Button>元の記事を見る</Button>
