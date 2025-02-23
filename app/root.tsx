@@ -20,7 +20,7 @@ import {
 import { Button } from "./components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
-import { SidebarProvider } from "./components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger,SidebarInset } from "./components/ui/sidebar";
 import { AppSidebar } from "./components/sidebar/app-sidebar";
 
 export const links: LinksFunction = () => [
@@ -59,9 +59,12 @@ export default function App() {
     <div className="min-h-screen flex flex-col">
       <SidebarProvider>
         <AppSidebar />
-        <main className="flex-1 p-4">
-          <Outlet />
-        </main>
+        <SidebarInset>
+          <SidebarTrigger />
+          <main className="flex-1 p-4">
+            <Outlet />
+          </main>
+        </SidebarInset>
       </SidebarProvider>
     </div>
   );

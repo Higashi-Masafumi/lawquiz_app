@@ -8,6 +8,9 @@ export class SectionRepository implements ISectionRepository {
   async listAll(): Promise<Section[]> {
     const response = await this.client.get({
       endpoint: "section",
+      queries: {
+        limit: 100,
+      }
     });
 
     return response.contents.map((section: Section) => {
