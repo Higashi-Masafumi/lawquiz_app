@@ -159,7 +159,6 @@ export class LangChainScoringRepository implements IScoringRepository {
     });
 
     return {
-      article: post,
       answer,
       grading,
       commentary: parsedResult.commentary,

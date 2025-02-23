@@ -12,7 +12,6 @@ export class Grading {
 
 export class GradingResult {
   constructor(
-    public readonly article: Post,
     public readonly answer: string,
     public readonly grading: Grading[],
     public readonly commentary: string

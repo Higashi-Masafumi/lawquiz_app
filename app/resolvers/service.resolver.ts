@@ -3,6 +3,7 @@ import { GradingRepository } from "~/core/adapters/microCMS/grading.repository";
 import { PostRepository } from "~/core/adapters/microCMS/post.repository";
 import { SectionRepository } from "~/core/adapters/microCMS/section.repository";
 import { ScoringRepository } from "~/core/adapters/openai/scoring.repository";
+import { OpenAIScoringGateway } from "~/core/adapters/openai/scoring_gateway";
 import { ScoringService } from "~/core/usecase/scoring.service";
 import { PostService } from "~/core/usecase/post.service";
 import { SectionService } from "~/core/usecase/section.service";
@@ -12,7 +13,7 @@ import OpenAI from "openai";
 import { OpenAIEmbeddings, ChatOpenAI } from "@langchain/openai";
 import { LangChainScoringRepository } from "~/core/adapters/langchain/scoring.repository";
 
-export const USE_LANGCHAIN = true;
+export const USE_LANGCHAIN = false;
 
 // microCMSのクライアント
 const microCMSClient = createClient({
@@ -49,7 +50,8 @@ const langChainScoringRepository = new LangChainScoringRepository(
 export const serviceResolver = {
   scoringService: new ScoringService(
     USE_LANGCHAIN ? langChainScoringRepository : openAIScoringRepository,
-    microCMSGradingRepository
+    microCMSGradingRepository,
+    new OpenAIScoringGateway(openAIClient)
   ),
   postService: new PostService(microCMSPostRepository),
   sectionService: new SectionService(

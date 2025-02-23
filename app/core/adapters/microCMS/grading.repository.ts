@@ -13,9 +13,9 @@ export class GradingRepository implements IGradingRepository {
      * 採点結果を登録する
      * @param gradingResult 採点結果
      */
-    async registerGradingResult(gradingResult: GradingResult): Promise<string> {
+    async registerGradingResult(post_id: string, gradingResult: GradingResult): Promise<string> {
         const registeringData = {
-            'article': gradingResult.article.id,
+            'article': post_id,
             'commentary': gradingResult.commentary,
             'answer': gradingResult.answer,
             'scores': gradingResult.grading.map((grading) => ({

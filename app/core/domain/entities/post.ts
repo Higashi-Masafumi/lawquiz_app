@@ -10,7 +10,7 @@ export class Post {
       public readonly section: Section,
       public readonly problem: string,
       public readonly knowledge: string,
-      public readonly column: string,
+      public readonly answer: string,
       public readonly fact: string,
       public readonly questions: Question[],
       public readonly navigate: string,
