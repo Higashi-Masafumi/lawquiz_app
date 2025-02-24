@@ -22,6 +22,9 @@ export class GradingRepository implements IGradingRepository {
                 'fieldId': 'scoring_item',
                 'title': grading.title,
                 'score': grading.score,
+                'maxScore': grading.maxScore,
+                'criterion': grading.criterion,
+                'description': grading.description,
             })),
         };
 

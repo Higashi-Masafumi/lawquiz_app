@@ -27,6 +27,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
   );
   const scores = result.scores.map((score) => ({
     criteria: score.title,
+    criterion: score.criterion,
+    description: score.description,
     score: score.score,
   }));
   const criteria = result.article.scoring_criteria.map((criterion) => ({
@@ -78,21 +80,34 @@ export default function GradingResultPage() {
               </p>
             </div>
             <ul className="space-y-4">
-              {criteria.map((item) => (
-                <li
-                  key={item.criteria}
-                  className="flex justify-between items-center bg-white rounded-lg shadow p-4"
-                >
-                  <span className="text-lg font-semibold text-gray-800">
-                    {item.criteria}
-                  </span>
-                  <span className="text-sm text-gray-600">
-                    {scores.find((score) => score.criteria === item.criteria)
-                      ?.score || 0}{" "}
-                    / {item.maxScore} 点
-                  </span>
-                </li>
-              ))}
+              {criteria.map((item) => {
+                const scoreItem = scores.find(
+                  (score) => score.criteria === item.criteria
+                );
+                return (
+                  <li
+                    key={item.criteria}
+                    className="bg-white rounded-lg shadow p-4 space-y-2"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold text-gray-800">
+                        {item.criteria}
+                      </span>
+                      <span className="text-sm font-medium px-3 py-1 bg-gray-100 rounded-full">
+                        {scoreItem?.score || 0} / {item.maxScore} 点
+                      </span>
+                    </div>
+                    {scoreItem?.description && (
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: scoreItem.description,
+                        }}
+                        className="text-sm text-gray-600 border-t pt-2 mt-2"
+                      />
+                    )}
+                  </li>
+                );
+              })}
             </ul>
             <Separator className="my-6" />
             <div className="bg-blue-50 p-4 rounded-md shadow">

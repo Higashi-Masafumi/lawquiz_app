@@ -23,7 +23,6 @@ import { useState } from "react";
 import {
   SidebarProvider,
   SidebarTrigger,
-  SidebarInset,
 } from "./components/ui/sidebar";
 import { AppSidebar } from "./components/sidebar/app-sidebar";
 
