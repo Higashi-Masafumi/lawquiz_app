@@ -5,6 +5,7 @@ import { NavLink, useLoaderData } from "@remix-run/react";
 import { formatDate } from "~/utils/date";
 import { serviceResolver } from "~/resolvers/service.resolver";
 import { LoaderFunctionArgs } from "@remix-run/node";
+import { HtmlWithCustomStyling } from "~/components/htmlbox";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   if (!params.slug) {
@@ -42,10 +43,9 @@ export default function SectionPage() {
                     <h3 className="font-bold text-lg line-clamp-2">
                       {post.title}
                     </h3>
-                    <div
-                      className="text-sm text-gray-600 line-clamp-4"
-                      dangerouslySetInnerHTML={{ __html: post.problem }}
-                    />
+                    <div className="text-sm text-gray-600 line-clamp-4">
+                      <HtmlWithCustomStyling htmlString={post.problem} />
+                    </div>
                   </div>
 
                   <div className="mt-4 text-sm text-emerald-600 group-hover:text-emerald-700 transition-colors flex items-center gap-1">

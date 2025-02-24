@@ -4,6 +4,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "~/components/ui/accordion";
+import { HtmlWithCustomStyling } from "~/components/htmlbox";
 
 interface AccordionCardProps {
   title: string;
@@ -23,6 +24,7 @@ export function AccordionCard({
     md: "text-base",
     lg: "text-lg",
   };
+
   return (
     <Accordion type="multiple">
       <AccordionItem value={title}>
@@ -32,7 +34,7 @@ export function AccordionCard({
           {title}
         </AccordionTrigger>
         <AccordionContent className="bg-white p-4 rounded-md shadow-inner border border-gray-200">
-          <div className={fontSizeClass[font_size]} dangerouslySetInnerHTML={{ __html: html_content }} />
+          <HtmlWithCustomStyling htmlString={html_content} />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

@@ -34,6 +34,7 @@
     "dotenv": "^16.4.5",
     "embla-carousel-react": "^8.5.2",
     "hnswlib-node": "^3.0.0",
+    "html-react-parser": "^5.2.2",
     "isbot": "^4.1.0",
     "langchain": "^0.3.15",
     "lucide-react": "^0.441.0",

@@ -4,6 +4,7 @@ import { Post } from "~/core/domain/entities/post";
 import { Card, CardContent } from "~/components/ui/card";
 import { Search } from "lucide-react";
 import { serviceResolver } from "~/resolvers/service.resolver";
+import { HtmlWithCustomStyling } from "~/components/htmlbox";
 
 type LoaderData = {
   posts: Post[];
@@ -57,7 +58,9 @@ export default function SearchPage() {
                       {post.title}
                     </h3>
                     <p className="text-sm text-gray-600 mb-4 flex-1 line-clamp-4">
-                      <div dangerouslySetInnerHTML={{ __html: post.problem }} />
+                      <div className="text-sm whitespace-pre-wrap">
+                        <HtmlWithCustomStyling htmlString={post.problem} />
+                      </div>
                     </p>
                     <div className="text-sm text-emerald-600 group-hover:text-emerald-700 transition-colors flex items-center gap-1">
                       もっとみる

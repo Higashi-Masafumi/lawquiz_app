@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-
+import { HtmlWithCustomStyling } from "~/components/htmlbox";
 interface SimpleCardProps {
   title: string;
   html_content: string;
@@ -12,7 +12,9 @@ export function SimpleCard({ title, html_content }: SimpleCardProps) {
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div dangerouslySetInnerHTML={{ __html: html_content }} />
+        <div className="text-sm whitespace-pre-wrap">
+          <HtmlWithCustomStyling htmlString={html_content} />
+        </div>
       </CardContent>
     </Card>
   );

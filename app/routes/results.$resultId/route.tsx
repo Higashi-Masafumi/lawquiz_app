@@ -19,6 +19,7 @@ import {
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { NavLink, useLoaderData } from "@remix-run/react";
 import { serviceResolver } from "~/resolvers/service.resolver";
+import { HtmlWithCustomStyling } from "~/components/htmlbox";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const resultId = params.resultId as string;
@@ -98,12 +99,9 @@ export default function GradingResultPage() {
                       </span>
                     </div>
                     {scoreItem?.description && (
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: scoreItem.description,
-                        }}
-                        className="text-sm text-gray-600 border-t pt-2 mt-2"
-                      />
+                      <div className="text-sm text-gray-600 border-t pt-2 mt-2">
+                        <HtmlWithCustomStyling htmlString={scoreItem.description} />
+                      </div>
                     )}
                   </li>
                 );
@@ -155,10 +153,9 @@ export default function GradingResultPage() {
             <h2 className="text-lg font-semibold text-gray-800">
               あなたの回答
             </h2>
-            <div
-              className="mt-4 text-gray-700"
-              dangerouslySetInnerHTML={{ __html: answer }}
-            />
+            <div className="mt-4 text-gray-700">
+              <HtmlWithCustomStyling htmlString={answer} />
+            </div>
           </div>
         </CardContent>
       </Card>

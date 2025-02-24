@@ -22,6 +22,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "~/components/ui/accordion";
+import { HtmlWithCustomStyling } from "~/components/htmlbox";
 
 const answerFormSchema = z.object({
   answer: z.string().min(1, { message: "回答を入力してください" }),
@@ -74,10 +75,9 @@ export function QuestionCard({ problem, question }: QuestionCardProps) {
         <CardTitle>{question.theme}</CardTitle>
       </CardHeader>
       <CardContent className="pt-6 space-y-4">
-        <div
-          className="text-lg"
-          dangerouslySetInnerHTML={{ __html: question.question }}
-        />
+        <div className="text-lg">
+          <HtmlWithCustomStyling htmlString={question.question} />
+        </div>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -145,20 +145,18 @@ export function QuestionCard({ problem, question }: QuestionCardProps) {
               <AccordionItem value="model-answer">
                 <AccordionTrigger>模範解答</AccordionTrigger>
                 <AccordionContent>
-                  <div
-                    className="text-sm whitespace-pre-wrap"
-                    dangerouslySetInnerHTML={{ __html: question.answer }}
-                  />
+                  <div className="text-sm whitespace-pre-wrap">
+                    <HtmlWithCustomStyling htmlString={question.answer} />
+                  </div>
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="comment">
                 <AccordionTrigger>解説</AccordionTrigger>
                 <AccordionContent>
-                  <div
-                    className="text-sm whitespace-pre-wrap"
-                    dangerouslySetInnerHTML={{ __html: question.comment }}
-                  />
+                  <div className="text-sm whitespace-pre-wrap">
+                    <HtmlWithCustomStyling htmlString={question.comment} />
+                  </div>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

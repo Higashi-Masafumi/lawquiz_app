@@ -9,6 +9,7 @@ import {
 import { Card, CardContent } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
 import { Link } from "@remix-run/react";
+import { HtmlWithCustomStyling } from "~/components/htmlbox";
 
 interface CarouselCard {
   title: string;
@@ -65,12 +66,9 @@ export function CarouselSlider({
                       <h3 className="font-bold mb-3 text-lg line-clamp-2">
                         {card.title}
                       </h3>
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: card.description,
-                        }}
-                        className="text-sm text-gray-600 mb-4 flex-1 line-clamp-4"
-                      />
+                      <div className="text-sm text-gray-600 mb-4 flex-1 line-clamp-4">
+                        <HtmlWithCustomStyling htmlString={card.description} />
+                      </div>
                       <div className="text-sm text-emerald-600 group-hover:text-emerald-700 transition-colors flex items-center gap-1">
                         もっとみる
                         <span className="inline-block transition-transform group-hover:translate-x-1">
